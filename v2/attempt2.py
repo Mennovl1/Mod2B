@@ -34,14 +34,14 @@ class bodies:
         for i in range(0, self.num):
             coll = np.zeros(3)
             dist = np.add(self.pos, - self.pos[i][:])
-            nrmdist = np.linalg.norm(cp.copy(dist), axis=1)**3
+            nrmdist = np.linalg.norm(cp.copy(dist), axis=1)
             nrmdist[i] = 999
             check = np.asarray(nrmdist <= self.radius + self.radius[i]).nonzero()
             if check[0].size:
                 for n in check[0]:
                     self.collide(i, n)
 
-            accmat = np.multiply(np.divide(dist, nrmdist), self.mass)
+            accmat = np.multiply(np.divide(dist, nrmdist**3), self.mass)
             acc[i][:] =  G * np.sum(accmat, axis=0)
         return acc
 
