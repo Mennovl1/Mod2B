@@ -14,12 +14,13 @@ SEED = "monoszijnsuf"
 np.random.seed(sum(ord(char) for char in SEED))
 
 class Star:
-    def __init__(self, pos, vel, mass = 1, facecolor="r",):
+    def __init__(self, pos, vel, mass = 1, facecolor="r", rho = RHO):
         self.pos = dc(np.array(pos))
         self.vel = dc(np.array(vel))
         self.mass = mass
-        self.radius = np.cbrt(3/(np.pi*4)*mass/RHO)
+        self.radius = np.cbrt(3/(np.pi*4)*mass/rho)
         self.fc = facecolor
+        self.rho = rho
     def draw(self):
         return plt.Circle(self.pos, radius = self.radius, fc=self.fc)
     def elastic(self, otherStar):
@@ -34,9 +35,10 @@ class Star:
         pos = (self.mass*self.pos+otherStar.mass*otherStar.pos)/(self.mass + otherStar.mass)
         vel = (self.mass*self.vel+otherStar.mass*otherStar.vel)/(self.mass + otherStar.mass)
         mass = (self.mass + otherStar.mass)
+        rho = mass/(self.mass/self.rho + otherstar.mass/otherStar.rho)
         radius = np.cbrt(3/(np.pi*4)*mass/RHO)
         color = self.fc 
-        return Star(pos, vel, mass, facecolor = color)
+        return Star(pos, vel, mass = mass, facecolor = color, rho = rho)
     def detectCollision(self, otherStar):
         r = np.linalg.norm(self.pos-otherStar.pos)
         return r <= self.radius+otherStar.radius
