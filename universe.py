@@ -12,8 +12,8 @@ class Universe:
         self.axis = axis
         #self.axis.plot([0,0,width,width,0],[0,height,height,0,0],"g")
         self.axis.axis("scaled")
-        self.axis.set_xlim(0,width)
-        self.axis.set_ylim(0,height)
+        self.axis.set_xlim(-0.5*width,0.5*width)
+        self.axis.set_ylim(-0.5*height,0.5*height)
         self.width = width
         self.height = height
         self.dt = dt
@@ -34,13 +34,16 @@ class Universe:
 
     
     def step(self):
-        for star in self.starList:
+        for i in range(len(self.starList)):
+            star = self.starList[i]
             oldpos = dc(star.pos)
-            for otherStar in self.starList:
+            for j in range(i+1):
+                otherStar = self.starList[j]
                 if star.detectCollision(otherStar) and otherStar!= star:
                     star.elastic(otherStar)
+        for i in range(len(self.starList)):
+            star = self.starList[i]
             star.pos = dc(star.pos+star.vel*self.dt)
-            i = self.starList.index(star)
             tempStarList = dc(self.starList)
             tempStarList.pop(i)
             star.vel = star.vel + self.G*sum(list( otherStar.mass*(otherStar.pos-star.pos)/np.linalg.norm(otherStar.pos-star.pos) for otherStar in tempStarList)) + 1/star.mass*Fext(star.pos)

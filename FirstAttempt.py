@@ -24,20 +24,17 @@ def main():
     ax = plt.subplot(111)
     ax.set_title(MODE)
 
-    if MODE == 'two stars':
-        a = Star((1.5,RADIUS),(0.15,3), facecolor = "b", radius = RADIUS)
-        b = Star((1.5,0.75,),(0,0), radius = RADIUS )
-        stars = [a,b]
-    elif MODE == "random":
-        N = 8
+    if MODE == "random":
+        N = 5
         stars = []
-        randomvals = np.random.rand(N,4)
+        randomvals = np.random.rand(N,6)
         while any(any((impossiblepos(val1,val2) and val1 is val2) for val2 in randomvals) for val1 in randomvals):
             randomvals = np.random.rand(N,4)
             print("apprehended")            
         for vals in randomvals:
-            color =np.random.rand(3)
-            stars += [Star( (WIDTH*vals[0],HEIGHT*vals[1]), (0.00*vals[2],0.00*vals[3]) , facecolor = color)]
+            mass =vals[4]
+            color = np.random.rand(3)
+            stars += [Star( (WIDTH*0.5*(vals[0]-0.5), HEIGHT*0.5*(vals[1]-0.5)), (0.00*vals[2],0.00*vals[3]), mass = mass, facecolor = color)]
 
     universe = Universe(stars, ax, dt=5e-3, trace = TRACE)
     mov = anim.FuncAnimation(fig,
