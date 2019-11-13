@@ -34,6 +34,7 @@ class Universe:
 
     
     def step(self):
+        newStarList = []
         for i in range(len(self.starList)):
             star = self.starList[i]
             oldpos = dc(star.pos)
@@ -41,6 +42,14 @@ class Universe:
                 otherStar = self.starList[j]
                 if star.detectCollision(otherStar) and otherStar!= star:
                     star.elastic(otherStar)
+                    newStarList += [dc(star)]
+                    #newStarList += [dc(otherStar)]
+                    #newStarList += [dc(star.inelastic(otherStar))]
+                else:
+                    newStarList += [dc(star)]
+                    #newStarList += [dc(otherStar)]
+        #self.starList = dc(newStarList)
+                
         for i in range(len(self.starList)):
             star = self.starList[i]
             star.pos = dc(star.pos+star.vel*self.dt)
@@ -57,7 +66,9 @@ class Universe:
         
     def draw(self):
         for j in range(len(self.starList)):
-                self.patchlist[j].center = self.starList[j].pos
+            star = self.starList[j]
+            star.draw()
+            #self.patchlist[j].center = self.starList[j].pos
         if self.trace:
             for j in range(len(self.starList)):
                 _line = self.tracelist[j]

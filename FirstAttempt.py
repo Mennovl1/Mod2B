@@ -10,7 +10,7 @@ WIDTH = 1.0
 HEIGHT = 1.0
 RADIUS = 0.01
 RHO = 1/(4*np.pi/3*0.01**3)
-TRACE = True
+TRACE = False
 SEED = "monoszijnsuf"
 np.random.seed(sum(ord(char) for char in SEED))
 
@@ -25,14 +25,14 @@ def main():
     ax.set_title(MODE)
 
     if MODE == "random":
-        N = 5
+        N = 3
         stars = []
         randomvals = np.random.rand(N,6)
         while any(any((impossiblepos(val1,val2) and val1 is val2) for val2 in randomvals) for val1 in randomvals):
             randomvals = np.random.rand(N,4)
             print("apprehended")            
         for vals in randomvals:
-            mass =vals[4]
+            mass =4
             color = np.random.rand(3)
             stars += [Star( (WIDTH*0.5*(vals[0]-0.5), HEIGHT*0.5*(vals[1]-0.5)), (0.00*vals[2],0.00*vals[3]), mass = mass, facecolor = color)]
 

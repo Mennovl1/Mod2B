@@ -21,8 +21,12 @@ class Star:
         self.radius = np.cbrt(3/(np.pi*4)*mass/rho)
         self.fc = facecolor
         self.rho = rho
+
+        
     def draw(self):
         return plt.Circle(self.pos, radius = self.radius, fc=self.fc)
+
+    
     def elastic(self, otherStar):
         r = dc(otherStar.pos-self.pos)
         u = float((sum((self.vel-otherStar.vel)*r) )) / (np.linalg.norm(r)**2)
@@ -31,16 +35,22 @@ class Star:
         otherStar.vel = dc(r*u+vb)
         self.vel = dc(va - r*u)
         return self.vel, otherStar.vel
+
+    
     def inelastic(self, otherStar):
         pos = (self.mass*self.pos+otherStar.mass*otherStar.pos)/(self.mass + otherStar.mass)
         vel = (self.mass*self.vel+otherStar.mass*otherStar.vel)/(self.mass + otherStar.mass)
         mass = (self.mass + otherStar.mass)
-        rho = mass/(self.mass/self.rho + otherstar.mass/otherStar.rho)
+        rho = mass/(self.mass/self.rho + otherStar.mass/otherStar.rho)
         radius = np.cbrt(3/(np.pi*4)*mass/RHO)
-        color = self.fc 
+        color = np.random.rand(3)
         return Star(pos, vel, mass = mass, facecolor = color, rho = rho)
+
+    
     def detectCollision(self, otherStar):
         r = np.linalg.norm(self.pos-otherStar.pos)
         return r <= self.radius+otherStar.radius
+
+    
     def __repr__(self):
         return "Star object\nPos = {}\nvel = {}\nmass = {}\nradius = {}\n".format(self.pos, self.vel, self.mass, self.radius)
