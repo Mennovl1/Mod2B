@@ -1,32 +1,37 @@
 from vpython import *
 import numpy as np
-from bodies import *
+from bodies import Bodies
 from node import *
+from numba import jit
 
 SEED = "monoszijnsuf"
 STARTSIZE = 1.5E14
 STARTSPEED =  110E6
-RANDOM = False
+RANDOM = True
+TREECODE = True
 np.random.seed(sum(ord(char) for char in SEED))
 
 
 def randombodies(num):
     pos = 2 * STARTSIZE * (np.random.rand(num, 3) - 0.5)
     vel = 2 * STARTSPEED * (np.random.rand(num, 3) - 0.5)
-    return bodies(pos, vel)
+    return Bodies(pos, vel)
 
 
 def main():
     
     if RANDOM:
-        universe = randombodies(50)
+        universe = randombodies(5000)
+        print('generated random bodies')
     else:
         pos = np.array([[1, 1, 1], [-1, 1, 1], [1, 2, -1]])
         vel = np.zeros((3, 3))
-        universe = bodies(pos, vel)
+        universe = Bodies(pos, vel)
 
-    root = buildTree(universe, 10)
-    print(root)
+    print("Building tree \n")
+    root = buildTree(universe, STARTSIZE * 2)
+    print('Done \n')
+    # print(root)
     
     # planet = []
     # TIME = 0

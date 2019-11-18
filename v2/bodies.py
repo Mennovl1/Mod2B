@@ -1,27 +1,30 @@
 import numpy as np
 import copy as cp
 from num_alg import *
+from node import *
+from numba import jit
 
 
 DT = 1000
 G = 6.67E-11
 RHO = 1/(4*np.pi/3*(5.51E3)**3)
 
-class bodies:
+class Bodies:
     def __init__(self, pos, vel, mass = 5.972E24):
         # Body initialization
         self.num = pos.shape[0]
         self.pos = pos
-        self.vel = vel
+        self.vel = velhhh`
         self.dt = DT
         self.mass = mass * np.ones((self.num, 1))
         self.radius = np.cbrt(3/(np.pi*4)*self.mass/RHO)
     
     def updateradius(self, i):
+        ''' Update the radius of body i'''
         self.radius[i] = np.cbrt(3/(np.pi*4)*self.mass[i]/RHO)
 
     def acc_coll(self):
-        # Calculate acceleration, and check collision
+        '''Calculate acceleration, and check collision'''
         acc = np.zeros((self.num, 3))
         remlist = []
     
@@ -45,14 +48,21 @@ class bodies:
 
 
     def do3Sim(self):
-        # Perform a full 3-leapfrog update
+        '''Perform a full 3-leapfrog update'''
         self.pos = cp.deepcopy(update3LF(self.pos, self.vel, self.num, 0, self.dt))
         accstep  = self.acc_coll()
         self.vel = cp.deepcopy(update3LF(self.vel, accstep,  self.num, 1, self.dt))
         self.pos = cp.deepcopy(update3LF(self.pos, self.vel, self.num, 0, self.dt))
+
+    def doBHSim(self):
+        '''Perform a full 3-leapfrog update with TreeCode'''
+        self.pos = cp.deepcopy(update3LF(self.pos, self.vel, self.num, 0, self.dt))
+        accstep = treeCode(self)
+        self.vel = cp.deepcopy(update3LF(self.vel, accstep, self.num, 1, self.dt))
+        self.pos = cp.deepcopy(update3LF(self.pos, self.vel, self.num, 0, self.dt))
     
     def collide(self, i, j):
-        # perform an inelastic collision
+        '''Perform an inelastic collision'''
         self.vel[i][:]  = (self.mass[i] * self.vel[i][:] + self.mass[j] * self.vel[j][:]) / (self.mass[i] + self.mass[j])
         self.mass[i]    = self.mass[i] + self.mass[j]
         self.pos[i][:]  = (self.pos[i][:] + self.pos[j][:]) / 2
