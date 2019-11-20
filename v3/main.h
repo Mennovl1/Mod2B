@@ -1,5 +1,5 @@
 #ifndef NUMSTARS
-#define  NUMSTARS 100000
+#define  NUMSTARS 1000
 #endif
 
 #ifndef DT
@@ -7,11 +7,15 @@
 #endif
 
 #ifndef WORLDSIZE
-#define WORLDSIZE 1E15
+#define WORLDSIZE 1E2
 #endif
 
 #ifndef SPEEDRANGE
 #define SPEEDRANGE 11E6
+#endif
+
+#ifndef THETA
+#define THETA 0.8
 #endif
 
 #ifndef MAIN_H

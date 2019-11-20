@@ -20,7 +20,10 @@ int main(){
     srand(201);
     
     std::cout << "Starting";
-    buildTree(strlist, WORLDSIZE);
-    std::cout << "Done";
+    Universe world = Universe(true);
+    float posx1 = (world.stars[1]).pos[0];
+    world.do3LPFstep();
+    float posx2 = (world.stars[1]).pos[0];
+    std::cout << "\n posx1 = " << posx1 << "\n posx2 = " << posx2 << "\n Difference = " << posx1 - posx2 << "\n Done";
     return 0;
 };

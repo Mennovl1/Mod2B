@@ -3,13 +3,13 @@
 
 class Star{
     public:
-        long pos[3];
-        long vel[3];
-        long acc[3];
-        long mass;
-        long radius;
+        float pos[3];
+        float vel[3];
+        float acc[3];
+        float mass;
+        float radius;
         uint id;
-        Star(long position[3], long velocity[3], uint identity);
+        Star(float position[3], float velocity[3], uint identity);
         Star();
 };
 
