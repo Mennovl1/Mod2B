@@ -8,7 +8,7 @@ Star::Star(float position[3], float velocity[3], uint identity){
         pos[i] = position[i];
         vel[i] = velocity[i];
         acc[i] = 0;
-        mass = 50;
+        mass = 20;
         radius = 1;
     }
     id = identity;
