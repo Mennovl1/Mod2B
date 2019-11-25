@@ -1,8 +1,9 @@
 from vpython import *
 import numpy as np
-from bodies import Bodies
+from bodies import Bodies, DT
 from node import *
 from numba import jit
+import copy as cp
 
 SEED = "monoszijnsuf"
 STARTSIZE = 1.5E14
@@ -28,16 +29,16 @@ def main():
         vel = np.zeros((3, 3))
         universe = Bodies(pos, vel)
 
-    print("Building tree \n")
-    root = buildTree(universe, STARTSIZE * 2)
-    print('Done \n')
-    # print(root)
+    # print("Building tree \n")
+    # root = buildTree(universe, STARTSIZE * 2)
+    # print('Done \n')
+    # # print(root)
     
-    # planet = []
-    # TIME = 0
-    # oldnum = universe.num
+    planet = []
+    TIME = 0
+    oldnum = universe.num
 
-    '''
+    
     for i in range(0, universe.num):
         planet.append(sphere(pos=vector(*(universe.pos[i][:])), radius = universe.radius[i], color=color.white))
 
@@ -57,7 +58,7 @@ def main():
                 planet[j + universe.num].visible = False
         
         oldnum = cp.deepcopy(universe.num)
-    '''
+    
 
 if __name__ == "__main__":
     main()

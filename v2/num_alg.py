@@ -1,5 +1,5 @@
 # Numerical algorithm steps for our star simulations
-
+import numpy as np
 
 def update3LF(pos, vel, num, sw, dt):
     # Do one 3-leapfrog substep
