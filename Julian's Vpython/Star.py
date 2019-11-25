@@ -5,7 +5,7 @@ import vpython as vp
 #Parameters:
 
 RADIUS = 695510e-9  # Pm (=10^12 m)
-RHO = 1.41e3        # 
+RHO = 1.41e9        # 
 TRACE = False
 SEED = "monoszijnsuf"
 
