@@ -22,6 +22,3 @@ float normsq(float a[3], float b[3]);
 
 #endif // UNIVERSE_H
 
-#ifndef G
-#define G 10000000000
-#endif

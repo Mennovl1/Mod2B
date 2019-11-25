@@ -27,8 +27,13 @@ Universe::Universe(const bool random){
 void Universe::calcAcc(int starid){
     // calculate the acceleration for starid
     initAcc();
-    for(int n = 0; n < NUMSTARS; n++){
+    if (!TREE){
+        for(int n = 0; n < NUMSTARS; n++){
         if(starid != n){  gravity((stars[starid]).pos, (stars[n]).pos, (stars[n]).mass); };
+        };
+    }else{
+        std::vector<float> res = tree.calcForce(stars[starid]);
+        for(int i = 0; i < 3; i++){acc[i] = res.at(i);};
     };
 };
 
@@ -53,6 +58,7 @@ void Universe::do3LPFstep(){
         LPFstep(stars[n].vel, acc, DT);     // Update velocity
         LPFstep(stars[n].pos, stars[n].vel, DT /2);  // Update position
     };
+    tree = renewTree(stars, tree, WORLDSIZE);
 };
 
 void LPFstep(float cur[3], volatile float dot[3], float dt){
@@ -62,9 +68,3 @@ void LPFstep(float cur[3], volatile float dot[3], float dt){
     };
 };
 
-float normsq(float a[3], float b[3]){
-    float d = sqrt((a[0] - b[0])*(a[0] - b[0]) +
-              (a[1] - b[1])*(a[1] - b[1]) +
-              (a[2] - b[2])*(a[2] - b[2]));
-    return d;
-};
