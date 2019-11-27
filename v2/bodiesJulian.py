@@ -4,11 +4,11 @@ from num_alg import *
 from node import *
 from numba import jit
 
-
-DT = 1E7
-G = 6.67E-11
-RHO = 1/(4*np.pi/3*(5.51E3)**3)*(10E4)
-moker = 1E34
+DT = 1e2
+G = 6.67
+#RHO = 1/(4*np.pi/3*(5.51E3)**3)*(10E4)
+M = 5.972
+RADIUS = 5e3
 
 class Bodies:
     def __init__(self, pos, vel, mass = M):
@@ -18,7 +18,7 @@ class Bodies:
         self.vel = vel
         self.dt = DT
         self.mass = mass * np.ones((self.num, 1))
-        self.radius = np.cbrt(3/(np.pi*4)*self.mass/RHO)
+        self.radius = RADIUS*np.ones((self.num,1))#np.cbrt(3/(np.pi*4)*self.mass/RHO)
     
     def updateradius(self, i):
         ''' Update the radius of body i'''
@@ -42,7 +42,7 @@ class Bodies:
                 #         # acc = cp.deepcopy(np.delete(acc, n, axis=0))
                 #         # remlist.append(n)
                 # else:
-            div = np.reshape(np.power(nrmdist,3), (self.num,1)) + moker
+            div = np.reshape(np.power(nrmdist,3), (self.num,1))
             accmat = np.multiply( np.divide(dist, div), np.reshape(self.mass, (self.num,1)))
             acc[i][:] =  G * np.sum(accmat, axis=0)
         return acc
@@ -54,7 +54,6 @@ class Bodies:
         accstep  = self.acc_coll()
         self.vel = cp.deepcopy(update3LF(self.vel, accstep,  self.num, 1, self.dt))
         self.pos = cp.deepcopy(update3LF(self.pos, self.vel, self.num, 0, self.dt))
-        
 
     def doBHSim(self):
         '''Perform a full 3-leapfrog update with TreeCode'''

@@ -7,6 +7,7 @@ Created on Mon Nov 25 16:11:36 2019
 
 import numpy as np
 import vpython as vp
+import time as time
 
 FILE = "v3/results/100stars.txt"
 RADIUS = 20
@@ -23,14 +24,15 @@ def plotData(File):
     pos0 = floatvec(posline0.split(",")[1:])
     bodylist = []
     for i in range(int(N)):
-        bodylist += [ vp.sphere(pos = vp.vector(*pos0[i:i+3]),
+        bodylist += [ vp.sphere(pos = vp.vector(*pos0[3*i:3*i+3]),
                                 radius = RADIUS) ]
     posline = posline0
     while posline:
         pos = floatvec(posline.split(",")[1:])
         for i in range(int(N)):
             body = bodylist[i]
-            body.pos = vp.vector(*pos[i:i+3])
+            body.pos = vp.vector(*pos[3*i:3*i+3])
+            print("slowdown")
         posline = file.readline()
     file.close()
     
