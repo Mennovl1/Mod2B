@@ -7,10 +7,15 @@ from numba import jit
 
 DT = 1000
 G = 6.67E-11
+<<<<<<< HEAD
 RHO = 1/(4*np.pi/3*(5.51E3)**3)*1e-3
+=======
+RHO = 1/(4*np.pi/3*(5.51E3)**3)*(10E4)
+>>>>>>> 85453b477997b2bb6097e65f5ff6ea50265d6871
 
 class Bodies:
     def __init__(self, pos, vel, mass = 5.972E24):
+    def __init__(self, pos, vel, mass = 5.972E30):
         # Body initialization
         self.num = pos.shape[0]
         self.pos = pos
