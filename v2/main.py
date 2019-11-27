@@ -11,18 +11,25 @@ STARTSPEED =  110E6
 RANDOM = True
 TREECODE = True
 np.random.seed(sum(ord(char) for char in SEED))
+G = 6.67E-11
+m=5.972E30
 
 
 def randombodies(num):
-    pos = 2 * STARTSIZE * (np.random.rand(num, 3) - 0.5)
-    vel = 2 * STARTSPEED * (np.random.rand(num, 3) - 0.5)
+    vel=np.zeros((num,3))
+    pos = (np.random.rand(num, 3))
+    for i in range(0,num):
+        pos[i][-1]=0
+        (pos[i][0],pos[i][1])=(pos[i][0]*STARTSIZE*np.cos(2*np.pi*pos[i][1]),pos[i][0]*STARTSIZE*np.sin(2*np.pi*pos[i][1]))
+        vel[i][0]=pos[i][1]*np.sqrt(G*m*500*np.sqrt((pos[i][0])**2+(pos[i][1])**2))/STARTSIZE/(10E9)/2
+        vel[i][1]=-pos[i][0]*np.sqrt(G*m*500*np.sqrt((pos[i][0])**2+(pos[i][1])**2))/STARTSIZE/(10E9)/2
     return Bodies(pos, vel)
 
 
 def main():
     
     if RANDOM:
-        universe = randombodies(5000)
+        universe = randombodies(500)
         print('generated random bodies')
     else:
         pos = np.array([[1, 1, 1], [-1, 1, 1], [1, 2, -1]])
