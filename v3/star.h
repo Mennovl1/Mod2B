@@ -11,8 +11,11 @@ class Star{
         uint id;
         Star(float position[3], float velocity[3], uint identity);
         Star();
+        void setMass(float newmass);
+        bool inWorld();
 };
 
 Star randomStar(uint id);
+Star randomStaruniform(uint id);
 
 #endif // STAR_H

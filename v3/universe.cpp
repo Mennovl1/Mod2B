@@ -9,7 +9,7 @@ Universe::Universe(const bool random){
     // Constructor for our universe
     if(random){
         for(int i = 0; i < NUMSTARS; i++){
-            stars[i] = randomStar(i);
+            stars[i] = randomStaruniform(i);
         };
     } else {
         float pos1[3] = {1E2, 1E2, 0};
@@ -20,7 +20,7 @@ Universe::Universe(const bool random){
         stars[1] = Star(pos2, vel2, 1);
     };
 
-    tree = buildTree(stars, WORLDSIZE);
+    tree = buildTree(stars, WORLDSIZE*10);
 };
 
 
@@ -57,8 +57,12 @@ void Universe::do3LPFstep(){
         calcAcc(n);
         LPFstep(stars[n].vel, acc, DT);     // Update velocity
         LPFstep(stars[n].pos, stars[n].vel, DT /2);  // Update position
+
+        if(!stars[n].inWorld()){
+            stars[n] = randomStaruniform(stars[n].id);
+        };
     };
-    tree = renewTree(stars, tree, WORLDSIZE);
+    tree = renewTree(stars, tree, WORLDSIZE*10);
 };
 
 void LPFstep(float cur[3], volatile float dot[3], float dt){

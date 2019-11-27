@@ -14,8 +14,9 @@
 
 
 const bool RANDOM = true;
-std::vector<Node> NODELIST;
 const float TIME = 10 * DT;
+std::vector<Node> NODELIST;
+
 // const char SEED[16] = "Mono's zijn suf";
 
 std::string datetime()
@@ -54,11 +55,41 @@ void appendstep(float time, Star starlist[], std::fstream &csvfile){
     csvfile << "\n";
 };
 
+// void consoleorcustom(bool setting){
+//     G = 6.67408;
+    
+//     if(setting){
+//         std::cout << "Stars to simulate: ";
+//         std::cin >> NUMSTARS;
+//         std::cout << "\nTimestep size (recommended 1e-9): ";
+//         std::cin >> DT;
+//         std::cout << "\nSize of the world (Milkyway is 1e3): ";
+//         std::cin >> WORLDSIZE;
+//         std::cout << "\nVelocities of the stars (Milkyway orbit ~8e8): ";
+//         std::cin >> SPEEDRANGE;
+//         std::cout << "\nTree code parameter theta (recommended 0.8): ";
+//         std::cin >> THETA;
+//         std::cout << "\nDo you want to use treecode (true/false): ";
+//         std::cin >> TREE;
+
+//     } else {
+//         NUMSTARS = 100;
+//         DT = 1e-9;
+//         WORLDSIZE = 1e3;
+//         SPEEDRANGE = 8e8;
+//         THETA = 0.8;
+//         TREE = true;
+        
+//     };
+// };
+
 int main(){
     // srand(201);
+    // consoleorcustom(true);
+    
     float t = 0;
     std::fstream csvfile;
-    std::string fname = "results/" + datetime() + ".csv";
+    std::string fname = "results/" + datetime() + ".txt";
     csvfile.open(fname, std::ios::out);
     Universe world = Universe(true);
     firstline(world.stars, csvfile);

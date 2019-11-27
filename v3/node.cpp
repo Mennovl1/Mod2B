@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <memory>
+#include <algorithm>
 #include "main.h"
 #include "star.h"
 #include "node.h"
@@ -9,6 +10,7 @@
 
 uint NodeCounter = 0;
 uint TMP = 0;
+float RADLIMIT = 1;
 
 // Constructor, initialize everything to 0, except for the NodeId, which is based on the global nodecounter
 Node::Node(){
@@ -139,7 +141,7 @@ std::vector<float> Node::calcForce(Star targetStar){
         Star* otherStar = firstchild;
         if((*otherStar).id != targetStar.id){
             float divisor = normsq((*otherStar).pos, targetStar.pos);
-            divisor = divisor * divisor * divisor;
+            std::max(divisor = divisor * divisor * divisor, RADLIMIT);
             for(int i = 0; i < 3; i++){
                 acc.at(i) += G * (*otherStar).mass * ((*otherStar).pos[i] - targetStar.pos[i]) / divisor;
             };
@@ -149,7 +151,7 @@ std::vector<float> Node::calcForce(Star targetStar){
         float d = radius * 2;
         if (d/r < THETA){
             for(int i = 0; i < 3; i++){
-                acc.at(i) += G * mass * (com[i] - targetStar.pos[i]) / (r * r * r);
+                acc.at(i) += G * mass * (com[i] - targetStar.pos[i]) / std::max(r * r * r, RADLIMIT);
             };
             
         } else {
@@ -161,6 +163,7 @@ std::vector<float> Node::calcForce(Star targetStar){
             };
         };
     };
+    
     return acc;
 };
 
