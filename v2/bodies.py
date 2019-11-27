@@ -7,7 +7,7 @@ from numba import jit
 
 DT = 1000
 G = 6.67E-11
-RHO = 1/(4*np.pi/3*(5.51E3)**3)
+RHO = 1/(4*np.pi/3*(5.51E3)**3)*1e-3
 
 class Bodies:
     def __init__(self, pos, vel, mass = 5.972E24):

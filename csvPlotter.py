@@ -13,23 +13,26 @@ RADIUS = 20
 
 floatvec = np.vectorize(float)
 
-file = open(FILE, "r")
-line0 = file.readline()
-N, DT, TEND, SIZE, VELSIZE, THETA = floatvec(line0.split(",")[0:6])
-MASSES = floatvec(line0.split(",")[0:6]) 
-
-posline0 = file.readline()
-pos0 = floatvec(posline0.split(",")[1:])
-bodylist = []
-for i in range(int(N)):
-    bodylist += [ vp.sphere(pos = vp.vector(*pos0[i:i+3]),
-                            radius = RADIUS) ]
-posline = posline0
-while posline:
-    pos = floatvec(posline.split(",")[1:])
+def plotData(File):
+    file = open(FILE, "r")
+    line0 = file.readline()
+    N, DT, TEND, SIZE, VELSIZE, THETA = floatvec(line0.split(",")[0:6])
+    MASSES = floatvec(line0.split(",")[0:6]) 
+    
+    posline0 = file.readline()
+    pos0 = floatvec(posline0.split(",")[1:])
+    bodylist = []
     for i in range(int(N)):
-        body = bodylist[i]
-        body.pos = vp.vector(*pos[i:i+3])
-    posline = file.readline()
-       
-file.close()
+        bodylist += [ vp.sphere(pos = vp.vector(*pos0[i:i+3]),
+                                radius = RADIUS) ]
+    posline = posline0
+    while posline:
+        pos = floatvec(posline.split(",")[1:])
+        for i in range(int(N)):
+            body = bodylist[i]
+            body.pos = vp.vector(*pos[i:i+3])
+        posline = file.readline()
+    file.close()
+    
+if __name__ == "__main__":
+    plotData(FILE)
