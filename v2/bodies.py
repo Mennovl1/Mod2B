@@ -11,6 +11,7 @@ RHO = 1/(4*np.pi/3*(5.51E3)**3)*(10E4)
 moker = 1E34
 
 class Bodies:
+    def __init__(self, pos, vel, mass = 5.972E24):
     def __init__(self, pos, vel, mass = 5.972E30):
         # Body initialization
         self.num = pos.shape[0]
