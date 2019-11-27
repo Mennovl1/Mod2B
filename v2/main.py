@@ -6,14 +6,14 @@ from numba import jit
 import copy as cp
 
 SEED = "monoszijnsuf"
-STARTSIZE = 1.5E14
+STARTSIZE = 1.5E14 #5e20 is reeel
 STARTSPEED =  110E6
 RANDOM = True
 TREECODE = True
 np.random.seed(sum(ord(char) for char in SEED))
 G = 6.67E-11
-m=5.972E30
-
+m=5.972E30 #2e30 is reel
+RHO = 1/(4*np.pi/3*(5.51E3)**3)*(10E4) #is dit niet 1/4piR^2
 
 def randombodies(num):
     vel=np.zeros((num,3))
@@ -21,8 +21,8 @@ def randombodies(num):
     for i in range(0,num):
         pos[i][-1]=0
         (pos[i][0],pos[i][1])=(pos[i][0]*STARTSIZE*np.cos(2*np.pi*pos[i][1]),pos[i][0]*STARTSIZE*np.sin(2*np.pi*pos[i][1]))
-        vel[i][0]=pos[i][1]*np.sqrt(G*m*500*np.sqrt((pos[i][0])**2+(pos[i][1])**2))/STARTSIZE/(10E9)/2
-        vel[i][1]=-pos[i][0]*np.sqrt(G*m*500*np.sqrt((pos[i][0])**2+(pos[i][1])**2))/STARTSIZE/(10E9)/2
+        vel[i][0]=pos[i][1]*np.sqrt(G*m*500/STARTSIZE)/np.sqrt((pos[i][0])**2+(pos[i][1])**2)
+        vel[i][1]=-pos[i][0]*np.sqrt(G*m*500/STARTSIZE)/np.sqrt((pos[i][0])**2+(pos[i][1])**2)
     return Bodies(pos, vel)
 
 
@@ -53,7 +53,7 @@ def main():
         universe.do3Sim()
         TIME += DT
         test = universe.num < oldnum
-
+        
         print(TIME)
         for i in range(0, universe.num):
             planet[i].pos = vector(*(universe.pos[i][:]))
@@ -65,7 +65,6 @@ def main():
                 planet[j + universe.num].visible = False
         
         oldnum = cp.deepcopy(universe.num)
-    
-
+    canvas.autoscale(False)
 if __name__ == "__main__":
     main()

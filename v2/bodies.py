@@ -5,9 +5,10 @@ from node import *
 from numba import jit
 
 
-DT = 1000
+DT = 1E7
 G = 6.67E-11
 RHO = 1/(4*np.pi/3*(5.51E3)**3)*(10E4)
+moker = 1E34
 
 class Bodies:
     def __init__(self, pos, vel, mass = 5.972E30):
@@ -41,7 +42,7 @@ class Bodies:
                 #         # acc = cp.deepcopy(np.delete(acc, n, axis=0))
                 #         # remlist.append(n)
                 # else:
-            div = np.reshape(np.power(nrmdist,3), (self.num,1))
+            div = np.reshape(np.power(nrmdist,3), (self.num,1)) + moker
             accmat = np.multiply( np.divide(dist, div), np.reshape(self.mass, (self.num,1)))
             acc[i][:] =  G * np.sum(accmat, axis=0)
         return acc
@@ -53,6 +54,7 @@ class Bodies:
         accstep  = self.acc_coll()
         self.vel = cp.deepcopy(update3LF(self.vel, accstep,  self.num, 1, self.dt))
         self.pos = cp.deepcopy(update3LF(self.pos, self.vel, self.num, 0, self.dt))
+        
 
     def doBHSim(self):
         '''Perform a full 3-leapfrog update with TreeCode'''
