@@ -8,7 +8,8 @@ DT = 1e2
 G = 6.67
 #RHO = 1/(4*np.pi/3*(5.51E3)**3)*(10E4)
 M = 5.972
-RADIUS = 5e3
+RADIUS = 5e2
+A = 1e4
 
 class Bodies:
     def __init__(self, pos, vel, mass = M):
@@ -20,9 +21,34 @@ class Bodies:
         self.mass = mass * np.ones((self.num, 1))
         self.radius = RADIUS*np.ones((self.num,1))#np.cbrt(3/(np.pi*4)*self.mass/RHO)
     
-    def updateradius(self, i):
-        ''' Update the radius of body i'''
-        self.radius[i] = np.cbrt(3/(np.pi*4)*self.mass[i]/RHO)
+    def acc(self):
+        '''Calculate acceleration'''
+        acc = np.zeros((self.num, 3))
+        for i in range(0, self.num):
+            # if i not in remlist:
+            dist = np.add(self.pos, - self.pos[i][:])
+            nrmdist = np.linalg.norm(cp.copy(dist), axis=1)
+            nrmdist[i] = 999E10
+            div = np.reshape(np.multiply(nrmdist, np.power(nrmdist,2)+A**2), (self.num,1))
+            accmat = np.multiply( np.divide(dist, div), np.reshape(self.mass, (self.num,1)))
+            acc[i][:] =  G * np.sum(accmat, axis=0)
+        return acc
+        
+    def coll(self):
+        '''Check collision'''
+        for i in range(0,self.num):
+            dist = np.add(self.pos, - self.pos[i][:])
+            nrmdist = np.linalg.norm(cp.copy(dist), axis=1)
+            nrmdist[i] = 999E10
+            test = np.reshape(self.radius + self.radius[i], (self.num))
+            check = np.where(nrmdist <= test)
+            if check[0].size:
+                for n in check[0]:
+                    self.elastic(i,n)
+                    print("Collision",i,n)
+            else:
+                ""
+        return
 
     def acc_coll(self):
         '''Calculate acceleration, and check collision'''
@@ -51,7 +77,8 @@ class Bodies:
     def do3Sim(self):
         '''Perform a full 3-leapfrog update'''
         self.pos = cp.deepcopy(update3LF(self.pos, self.vel, self.num, 0, self.dt))
-        accstep  = self.acc_coll()
+        #self.coll()
+        accstep  = self.acc()
         self.vel = cp.deepcopy(update3LF(self.vel, accstep,  self.num, 1, self.dt))
         self.pos = cp.deepcopy(update3LF(self.pos, self.vel, self.num, 0, self.dt))
 
@@ -61,6 +88,22 @@ class Bodies:
         accstep = treeCode(self)
         self.vel = cp.deepcopy(update3LF(self.vel, accstep, self.num, 1, self.dt))
         self.pos = cp.deepcopy(update3LF(self.pos, self.vel, self.num, 0, self.dt))
+    
+    def elastic(self, i, j):
+        r = self.pos[i][:]-self.pos[j][:]
+        u = float(sum((self.vel[i][:]-self.vel[j][:]))/np.linalg.norm(r)**2)
+        vi = self.vel[i][:] - r*u 
+        vj = self.vel[j][:] + r*u
+        self.vel[i]=vi
+        self.vel[j]=vj
+        return 
+#        r = dc(otherStar.pos-self.pos)
+#        u = float((sum((self.vel-otherStar.vel)*r) )) / (np.linalg.norm(r)**2)
+#        va = dc(self.vel)
+#        vb = dc(otherStar.vel)
+#        otherStar.vel = dc(r*u+vb)
+#        self.vel = dc(va - r*u)
+#        return self.vel, otherStar.vel
     
     def collide(self, i, j):
         '''Perform an inelastic collision'''

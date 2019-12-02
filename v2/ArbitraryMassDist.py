@@ -12,13 +12,14 @@ np.random.seed(sum(ord(char) for char in SEED))
 N = 500
 G = 6.67
 STARTSIZE = 5e5 #in Gamma meter
+MASS = 5.972
 
 
 def randombodies(num):
     randarr = np.random.rand(num,2)
     pos = np.array([(STARTSIZE*rand[0]*np.cos(2*np.pi*rand[1]), STARTSIZE*rand[0]*np.sin(2*np.pi*rand[1]),0) for rand in randarr])
-    vel = np.zeros((num,3))#np.random.rand(num,3)
-    print(randarr)
+    VEL = np.sqrt(G*MASS*N/STARTSIZE)
+    vel = np.array([(-VEL*np.sin(2*np.pi*rand[1]),VEL*np.cos(2*np.pi*rand[1]),0) for rand in randarr])
     return Bodies(pos, vel)
 
 
