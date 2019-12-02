@@ -9,10 +9,10 @@ import numpy as np
 import vpython as vp
 import time as time
 
-FILE = "Mod2B/v3/results/many.txt"
-RADIUS = 900
+FILE = "Mod2B/v3/results/100starslarger.txt"
+RADIUS = 200
 
-scene = vp.canvas(width = 1800, height = 1000)
+
 
 floatvec = np.vectorize(float)
 
@@ -20,7 +20,8 @@ def plotData(File):
     file = open(FILE, "r")
     line0 = file.readline()
     N, DT, TEND, SIZE, VELSIZE, THETA = floatvec(line0.split(",")[0:6])
-    MASSES = floatvec(line0.split(",")[0:6]) 
+    MASSES = floatvec(line0.split(",")[0:6])
+    scene = vp.canvas(width = 1800, height = 1000, autoscale = False, range = 2*SIZE)
     
     posline0 = file.readline()
     pos0 = floatvec(posline0.split(",")[1:])

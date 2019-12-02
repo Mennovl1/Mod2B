@@ -4,6 +4,8 @@
 #include "main.h"
 #include "star.h"
 #include "node.h"
+#include <vector>
+
 
 class Universe{
     public:
@@ -12,9 +14,12 @@ class Universe{
         volatile float acc[3];
         Universe(const bool random);
         void do3LPFstep();
-        void calcAcc(int starid);
-        void initAcc();
-        void gravity(float a[3], float b[3], float mass);
+        void calcAcc();
+        void initAcc(int starid);
+        std::vector<float> gravity(float a[3], float b[3], float mass);
+        float calcEnergy();
+        float calcImpuls(int i);
+        std::vector<float> calcImpulsMoment();
 };
 
 void LPFstep(float dot[3], volatile float cur[3], float dt);
