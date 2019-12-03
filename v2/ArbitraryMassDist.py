@@ -10,8 +10,8 @@ TREECODE = False
 np.random.seed(sum(ord(char) for char in SEED))
 
 N = 500
-G = 6.67
-STARTSIZE = 5e5 #in Gamma meter
+G = 6.67e10
+STARTSIZE = 5e6 #in Gamma meter
 MASS = 5.972
 
 
@@ -41,7 +41,8 @@ def main():
         TIME += DT
         test = universe.num < oldnum
         #print(TIME)
-        print(planet[0].pos)
+        #print(planet[0].pos)
+        print(universe.impulse())
         for i in range(0, universe.num):
             planet[i].pos = vector(*(universe.pos[i][:]))
             if test:

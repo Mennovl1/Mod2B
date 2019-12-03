@@ -1,25 +1,44 @@
 import numpy as np
 import copy as cp
 from num_alg import *
-from node import *
-from numba import jit
+#from node import *
+#from numba import jit
 
-DT = 1e2
-G = 6.67
+DT = 1e1
+G = 6.67e10
 #RHO = 1/(4*np.pi/3*(5.51E3)**3)*(10E4)
 M = 5.972
-RADIUS = 5e2
-A = 1e4
+RADIUS = 4e4
+A = 5e4
 
 class Bodies:
-    def __init__(self, pos, vel, mass = M):
+    def __init__(self, pos, vel, dt = DT, mass = M, radius = RADIUS):
         # Body initialization
         self.num = pos.shape[0]
         self.pos = pos
         self.vel = vel
-        self.dt = DT
+        self.dt = dt
         self.mass = mass * np.ones((self.num, 1))
-        self.radius = RADIUS*np.ones((self.num,1))#np.cbrt(3/(np.pi*4)*self.mass/RHO)
+        self.radius = radius*np.ones((self.num,1))#np.cbrt(3/(np.pi*4)*self.mass/RHO)
+    
+    def energy(self):
+        Ekin = sum(0.5*self.mass*np.linalg.norm(self.vel, axis = 1)**2)
+        for i in range(0, self.num):
+            # if i not in remlist:
+            dist = np.add(self.pos, - self.pos[i][:])
+            nrmdist = np.linalg.norm(cp.copy(dist), axis=1)
+            nrmdist[i] = 999E10
+            div = np.reshape(np.multiply(nrmdist, np.power(nrmdist,2)+A**2), (self.num,1))
+            Umat = np.multiply( np.divide(dist, div), np.reshape(self.mass, (self.num,1)))
+            U[i][:] =  G * np.sum(accmat, axis=0)
+        Epot = 
+        return Ekin + Epot
+    
+    def impulse(self):
+        px = self.mass[:,0]*self.vel[:,0]
+        py = self.mass[:,0]*self.vel[:,1]
+        pz = self.mass[:,0]*self.vel[:,2]
+        return [sum(px),sum(py),sum(pz)]
     
     def acc(self):
         '''Calculate acceleration'''
