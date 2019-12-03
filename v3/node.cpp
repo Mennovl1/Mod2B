@@ -10,7 +10,8 @@
 
 uint NodeCounter = 0;
 uint TMP = 0;
-float RADLIMIT = 1;
+float RADLIMIT = 0;
+float EPSILON =  0.05 * WORLDSIZE;
 
 // Constructor, initialize everything to 0, except for the NodeId, which is based on the global nodecounter
 Node::Node(){
@@ -141,7 +142,7 @@ std::vector<float> Node::calcForce(Star targetStar){
         Star* otherStar = firstchild;
         if((*otherStar).id != targetStar.id){
             float divisor = normsq((*otherStar).pos, targetStar.pos);
-            std::max(divisor = divisor * divisor * divisor, RADLIMIT);
+            std::max(divisor = divisor * divisor * divisor + EPSILON, RADLIMIT);
             for(int i = 0; i < 3; i++){
                 acc.at(i) += G * (*otherStar).mass * ((*otherStar).pos[i] - targetStar.pos[i]) / divisor;
             };
@@ -151,7 +152,7 @@ std::vector<float> Node::calcForce(Star targetStar){
         float d = radius * 2;
         if (d/r < THETA){
             for(int i = 0; i < 3; i++){
-                acc.at(i) += G * mass * (com[i] - targetStar.pos[i]) / std::max(r * r * r, RADLIMIT);
+                acc.at(i) += G * mass * (com[i] - targetStar.pos[i]) / std::max(r * r * r + EPSILON, RADLIMIT);
             };
             
         } else {

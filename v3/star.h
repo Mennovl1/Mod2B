@@ -12,7 +12,11 @@ class Star{
         Star(float position[3], float velocity[3], uint identity);
         Star();
         void setMass(float newmass);
+        void setAcc(std::vector<float> newAcc);
         bool inWorld();
+        float calcEnergy();
+        float calcImpuls(int i);
+        std::vector<float> calcImpulsMoment(float reference[3]);
 };
 
 Star randomStar(uint id);
