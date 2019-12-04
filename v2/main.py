@@ -1,19 +1,19 @@
 from vpython import *
 import numpy as np
-from bodies import Bodies, DT
+from bodiesJulian import Bodies, DT
 from node import *
 from numba import jit
 import copy as cp
 
 SEED = "monoszijnsuf"
-STARTSIZE = 1.5E14 #5e20 is reeel
+STARTSIZE = 5e5 #is reeel
 STARTSPEED =  110E6
 RANDOM = True
 TREECODE = True
 np.random.seed(sum(ord(char) for char in SEED))
-G = 6.67E-11
-m=5.972E30 #2e30 is reel
-RHO = 1/(4*np.pi/3*(5.51E3)**3)*(10E4) #is dit niet 1/4piR^2
+G = 6.67e10
+m=5.972 #2e30 is reel
+RHO = 1/(4*np.pi/3*(5.51E3)**3)*(10E-2) #is dit niet 1/4piR^2
 
 def randombodies(num):
     vel=np.zeros((num,3))
@@ -23,7 +23,7 @@ def randombodies(num):
         (pos[i][0],pos[i][1])=(pos[i][0]*STARTSIZE*np.cos(2*np.pi*pos[i][1]),pos[i][0]*STARTSIZE*np.sin(2*np.pi*pos[i][1]))
         vel[i][0]=pos[i][1]*np.sqrt(G*m*500/STARTSIZE)/np.sqrt((pos[i][0])**2+(pos[i][1])**2)
         vel[i][1]=-pos[i][0]*np.sqrt(G*m*500/STARTSIZE)/np.sqrt((pos[i][0])**2+(pos[i][1])**2)
-    return Bodies(pos, vel)
+    return Bodies(pos, vel, m)
 
 
 def main():

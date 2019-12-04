@@ -9,6 +9,7 @@ DT = 1E7
 G = 6.67E-11
 RHO = 1/(4*np.pi/3*(5.51E3)**3)*(10E4)
 moker = 1E34
+M=5.972E30
 
 class Bodies:
     def __init__(self, pos, vel, mass = M):

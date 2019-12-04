@@ -4,12 +4,12 @@ from num_alg import *
 from node import *
 from numba import jit
 
-DT = 1e2
-G = 6.67
+DT = 1e-1
+G = 6.67e10
 #RHO = 1/(4*np.pi/3*(5.51E3)**3)*(10E4)
 M = 5.972
-RADIUS = 5e2
-A = 1e4
+RADIUS = 5e3
+A = 5e4
 
 class Bodies:
     def __init__(self, pos, vel, mass = M):
@@ -29,7 +29,7 @@ class Bodies:
             dist = np.add(self.pos, - self.pos[i][:])
             nrmdist = np.linalg.norm(cp.copy(dist), axis=1)
             nrmdist[i] = 999E10
-            div = np.reshape(np.multiply(nrmdist, np.power(nrmdist,2)+A**2), (self.num,1))
+            div = np.reshape(np.multiply(np.power(nrmdist,2), np.power(nrmdist,1)+A**1), (self.num,1))
             accmat = np.multiply( np.divide(dist, div), np.reshape(self.mass, (self.num,1)))
             acc[i][:] =  G * np.sum(accmat, axis=0)
         return acc
