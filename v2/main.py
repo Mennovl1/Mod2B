@@ -33,8 +33,24 @@ def randomBodiesWithBlackHole(num):
     for i in range(0,num):
         pos[i][-1]=0
         (pos[i][0],pos[i][1])=(pos[i][0]*STARTSIZE*np.cos(2*np.pi*pos[i][1]),pos[i][0]*STARTSIZE*np.sin(2*np.pi*pos[i][1]))
-        vel[i][0]=pos[i][1]*np.sqrt(G*m*N/STARTSIZE+M/np.sqrt(((pos[i][0])**2+(pos[i][1])**2)))/np.sqrt((pos[i][0])**2+(pos[i][1])**2)*1.3
-        vel[i][1]=-pos[i][0]*np.sqrt(G*m*N/STARTSIZE+M/np.sqrt(((pos[i][0])**2+(pos[i][1])**2)))/np.sqrt((pos[i][0])**2+(pos[i][1])**2)*1.3
+        vel[i][0]=pos[i][1]*np.sqrt(G*m*N/STARTSIZE+G*M/np.sqrt(((pos[i][0])**2+(pos[i][1])**2)))/np.sqrt((pos[i][0])**2+(pos[i][1])**2)/1.2
+        vel[i][1]=-pos[i][0]*np.sqrt(G*m*N/STARTSIZE+G*M/np.sqrt(((pos[i][0])**2+(pos[i][1])**2)))/np.sqrt((pos[i][0])**2+(pos[i][1])**2)/1.2
+    print(pos.shape)
+    print(np.array([[0,0,0]]).shape)
+    pos2 = np.concatenate((np.array([[0,0,0]]), pos), axis=0)
+    vel2 = np.concatenate((np.array([[0,0,0]]), vel), axis=0)
+    mass2 = np.concatenate((M*np.ones((1,1)),m*np.ones((pos.shape[0], 1))), axis=0)
+    return Bodies(pos2, vel2, mass = mass2)
+
+def randomBodiesWithBlackHole2(num):
+    vel=np.zeros((num,3))
+    pos = (np.random.rand(num, 3))
+    for i in range(0,num):
+        pos[i][-1]=0
+        pos[i][0]=pos[i][0]+0.1
+        (pos[i][0],pos[i][1])=(pos[i][0]*STARTSIZE*np.cos(2*np.pi*pos[i][1]),pos[i][0]*STARTSIZE*np.sin(2*np.pi*pos[i][1]))
+        vel[i][0]=pos[i][1]*np.sqrt(G*m*N/STARTSIZE+G*(M-0.1*m*N)/np.sqrt(((pos[i][0])**2+(pos[i][1])**2)))/np.sqrt((pos[i][0])**2+(pos[i][1])**2)/1.2
+        vel[i][1]=-pos[i][0]*np.sqrt(G*m*N/STARTSIZE+G*(M-0.1*m*N)/np.sqrt(((pos[i][0])**2+(pos[i][1])**2)))/np.sqrt((pos[i][0])**2+(pos[i][1])**2)/1.2
     print(pos.shape)
     print(np.array([[0,0,0]]).shape)
     pos2 = np.concatenate((np.array([[0,0,0]]), pos), axis=0)
@@ -46,7 +62,7 @@ def randomBodiesWithBlackHole(num):
 def main():
     
     if RANDOM:
-        universe = randomBodiesWithBlackHole(N)
+        universe = randomBodiesWithBlackHole2(N)
         print('generated random bodies')
     else:
         pos = np.array([[1, 1, 1], [-1, 1, 1], [1, 2, -1]])
