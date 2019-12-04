@@ -27,11 +27,37 @@ void Star::setMass(float newmass){
     mass = newmass;
 };
 
+void Star::setAcc(std::vector<float> newAcc){
+    for(int i = 0; i < 3; i++){ acc[i] = newAcc.at(i); };
+};
+
 bool Star::inWorld(){
     float zeros[3] = {0,0,0};
     return (normsq(pos, zeros) < WORLDSIZE);
 };
 
+float Star::calcEnergy(){
+    float zeros[3] = {0,0,0};
+    float absvel = normsq(vel, zeros);
+    return 0.5 * mass * absvel * absvel;
+};
+
+
+float Star::calcImpuls(int i){
+    return mass * vel[i];
+};
+
+std::vector<float> Star::calcImpulsMoment(float reference[3]){
+    float r[3]; float p[3]; std::vector<float> L = {0,0,0};
+    for(int i = 0; i < 3; i++){
+        r[i] = abs(pos[i] - reference[i]);
+        p[i] = mass * vel[i];
+    };
+    L.at(0) = r[1] * p[2] - r[2] * p[1];
+    L.at(1) = r[2] * p[0] - r[0] * p[2];
+    L.at(2) = r[0] * p[1] - r[1] * p[0];
+    return L;
+};
 
 Star randomStar(uint id){
     // Create a random star in the world

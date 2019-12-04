@@ -4,6 +4,8 @@
 #include <cstdlib>
 #include <string>
 #include <vector>
+
+// Custom functions
 #include "star.h"
 #include "node.h"
 #include "star.cpp"
@@ -14,7 +16,7 @@
 
 
 const bool RANDOM = true;
-const float TIME = 10 * DT;
+
 std::vector<Node> NODELIST;
 
 // const char SEED[16] = "Mono's zijn suf";
@@ -39,18 +41,25 @@ float normsq(float a[3], float b[3]){
     return d;
 };
 
-void firstline(Star starlist[], std::fstream &csvfile){
-    csvfile << NUMSTARS << "," << DT << "," << TIME << "," << WORLDSIZE << "," << SPEEDRANGE << "," << THETA;
+void firstline(Star starlist[], std::fstream &csvfile, bool plotpos){
+    csvfile << NUMSTARS << "," << DT << "," << TIME << "," << WORLDSIZE << "," << SPEEDRANGE << "," << THETA << "," << plotpos;
     for(int i = 0; i < NUMSTARS; i++){
         csvfile << "," << starlist[i].mass;
     };
     csvfile << "\n";
 };
 
-void appendstep(float time, Star starlist[], std::fstream &csvfile){
+void appendstep(float time, Star starlist[], Universe* world, std::fstream &csvfile, bool plotpos){
     csvfile << time;
-    for(int i = 0; i < NUMSTARS; i++){
-        csvfile << "," << starlist[i].pos[0] << "," << starlist[i].pos[1] << "," << starlist[i].pos[2];
+    if (plotpos){
+        for(int i = 0; i < NUMSTARS; i++){
+            csvfile << "," << starlist[i].pos[0] << "," << starlist[i].pos[1] << "," << starlist[i].pos[2];
+        };
+    } else {
+        std::vector<float> impulsMoment = (*world).calcImpulsMoment();
+        // std::vector<float> impuls = world.calcImpuls();
+        csvfile << "," << (*world).calcEnergy() << "," << (*world).calcImpuls(0) << "," << (*world).calcImpuls(1) << "," << (*world).calcImpuls(2) << ",";
+        csvfile << impulsMoment.at(0) << "," << impulsMoment.at(1) << "," << impulsMoment.at(2);
     };
     csvfile << "\n";
 };
@@ -83,24 +92,26 @@ void appendstep(float time, Star starlist[], std::fstream &csvfile){
 //     };
 // };
 
+
 int main(){
     // srand(201);
     // consoleorcustom(true);
     
     float t = 0;
+    bool plotPos = true;
     std::fstream csvfile;
     std::string fname = "results/" + datetime() + ".txt";
     csvfile.open(fname, std::ios::out);
     Universe world = Universe(true);
-    firstline(world.stars, csvfile);
+    firstline(world.stars, csvfile, plotPos);
 
     while(t < TIME){
-        appendstep(t, world.stars, csvfile);
+        appendstep(t, world.stars, &world, csvfile, plotPos);
         world.do3LPFstep();
         std::cout << t << "\n";
         t += DT;
     };
-    appendstep(t, world.stars, csvfile);
+    appendstep(t, world.stars, &world, csvfile, plotPos);
 
     return 0;
 };

@@ -1,13 +1,13 @@
-#ifndef NUMSTARS
-#define  NUMSTARS 100000
+#ifndef NUMStARS
+#define  NUMSTARS 100
 #endif
 
 #ifndef DT
-#define DT 0.000001
+#define DT 0.0005
 #endif
 
 #ifndef WORLDSIZE
-#define WORLDSIZE 1E6
+#define WORLDSIZE 5E4
 #endif
 
 #ifndef SPEEDRANGE
@@ -19,7 +19,7 @@
 #endif
 
 #ifndef TREE
-#define TREE true
+#define TREE false
 #endif
 
 #ifndef G
@@ -33,14 +33,13 @@
 
 #include "node.h"
 
-// int NUMSTARS;
-// double DT;
-// double WORLDSIZE;
-// float SPEEDRANGE;
-// float THETA;
-// float TIME;
-// bool TREE;
-// float G;
+
+// int NUMSTARS = 10;
+// float DT = 0.0005;
+float TIME = 1000 * DT;
+// float WORLDSIZE = 5E5;
+// float THETA = 0.8;
+// bool TREE = true;
 
 // Node buildtree();
 std::string datetime();
