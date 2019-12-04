@@ -4,19 +4,17 @@ from num_alg import *
 #from node import *
 #from numba import jit
 
-DT = 1e1
-
 DT = 1e-1
 G = 6.67e10
 #RHO = 1/(4*np.pi/3*(5.51E3)**3)*(10E4)
 M = 5.972
-RADIUS = 4e4
 RADIUS = 5e3
 
 A = 5e4
 
 class Bodies:
         # Body initialization
+    def __init__(self, pos, vel, dt=DT, mass = M, radius = RADIUS, color = "white"):
         self.num = pos.shape[0]
         self.pos = pos
         self.vel = vel
@@ -38,11 +36,7 @@ class Bodies:
             div = np.reshape(np.multiply(nrmdist, np.power(nrmdist,2)+A**2), (self.num,1))
             Umat = np.multiply( np.divide(dist, div), np.reshape(self.mass, (self.num,1)))
             U[i][:] =  G * np.sum(accmat, axis=0)
-<<<<<<< HEAD
-        #Epot = 
-=======
         Epot = "Moet nog aangepast worden"
->>>>>>> a5b17aeec1de420ac8105f52c991d53b98a79708
         return Ekin + Epot
     
     def impulse(self):
@@ -108,9 +102,7 @@ class Bodies:
         '''Perform a full 3-leapfrog update'''
         self.pos = cp.deepcopy(update3LF(self.pos, self.vel, self.num, 0, self.dt))
         #self.coll()
-        print("abc")
         accstep  = self.acc()
-        print("efg")
         self.vel = cp.deepcopy(update3LF(self.vel, accstep,  self.num, 1, self.dt))
         self.pos = cp.deepcopy(update3LF(self.pos, self.vel, self.num, 0, self.dt))
 
