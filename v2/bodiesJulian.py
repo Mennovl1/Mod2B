@@ -31,7 +31,7 @@ class Bodies:
             div = np.reshape(np.multiply(nrmdist, np.power(nrmdist,2)+A**2), (self.num,1))
             Umat = np.multiply( np.divide(dist, div), np.reshape(self.mass, (self.num,1)))
             U[i][:] =  G * np.sum(accmat, axis=0)
-        Epot = 
+        #Epot = 
         return Ekin + Epot
     
     def impulse(self):
