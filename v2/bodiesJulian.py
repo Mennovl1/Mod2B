@@ -102,9 +102,7 @@ class Bodies:
         '''Perform a full 3-leapfrog update'''
         self.pos = cp.deepcopy(update3LF(self.pos, self.vel, self.num, 0, self.dt))
         #self.coll()
-        print("abc")
         accstep  = self.acc()
-        print("efg")
         self.vel = cp.deepcopy(update3LF(self.vel, accstep,  self.num, 1, self.dt))
         self.pos = cp.deepcopy(update3LF(self.pos, self.vel, self.num, 0, self.dt))
 
