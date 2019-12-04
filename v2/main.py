@@ -12,10 +12,10 @@ RANDOM = True
 TREECODE = True
 np.random.seed(sum(ord(char) for char in SEED))
 G = 6.67e10
-M = 200
+M = 2000
 m=5.972 #2e30 is reel
 RHO = 1/(4*np.pi/3*(5.51E3)**3)*(10E-2) #is dit niet 1/4piR^2
-N=500
+N=1000
 
 def randombodies(num):
     vel=np.zeros((num,3))
@@ -33,8 +33,8 @@ def randomBodiesWithBlackHole(num):
     for i in range(0,num):
         pos[i][-1]=0
         (pos[i][0],pos[i][1])=(pos[i][0]*STARTSIZE*np.cos(2*np.pi*pos[i][1]),pos[i][0]*STARTSIZE*np.sin(2*np.pi*pos[i][1]))
-        vel[i][0]=pos[i][1]*np.sqrt(G*m*N/STARTSIZE)/np.sqrt((pos[i][0])**2+(pos[i][1])**2)
-        vel[i][1]=-pos[i][0]*np.sqrt(G*m*N/STARTSIZE)/np.sqrt((pos[i][0])**2+(pos[i][1])**2)
+        vel[i][0]=pos[i][1]*np.sqrt(G*m*N/STARTSIZE+M/np.sqrt(((pos[i][0])**2+(pos[i][1])**2)))/np.sqrt((pos[i][0])**2+(pos[i][1])**2)*1.3
+        vel[i][1]=-pos[i][0]*np.sqrt(G*m*N/STARTSIZE+M/np.sqrt(((pos[i][0])**2+(pos[i][1])**2)))/np.sqrt((pos[i][0])**2+(pos[i][1])**2)*1.3
     print(pos.shape)
     print(np.array([[0,0,0]]).shape)
     pos2 = np.concatenate((np.array([[0,0,0]]), pos), axis=0)
@@ -66,9 +66,7 @@ def main():
     for i in range(0, universe.num):
         planet.append(sphere(pos=vector(*(universe.pos[i][:])), radius = universe.radius[i], color=color.white))
     while True:
-        print("1")
         universe.do3Sim()
-        print("2")
         TIME += DT
         print(universe.num)
         print(oldnum)
