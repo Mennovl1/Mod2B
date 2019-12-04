@@ -12,8 +12,10 @@ RANDOM = True
 TREECODE = True
 np.random.seed(sum(ord(char) for char in SEED))
 G = 6.67e10
+M = 200
 m=5.972 #2e30 is reel
 RHO = 1/(4*np.pi/3*(5.51E3)**3)*(10E-2) #is dit niet 1/4piR^2
+N=500
 
 def randombodies(num):
     vel=np.zeros((num,3))
@@ -21,15 +23,30 @@ def randombodies(num):
     for i in range(0,num):
         pos[i][-1]=0
         (pos[i][0],pos[i][1])=(pos[i][0]*STARTSIZE*np.cos(2*np.pi*pos[i][1]),pos[i][0]*STARTSIZE*np.sin(2*np.pi*pos[i][1]))
-        vel[i][0]=pos[i][1]*np.sqrt(G*m*500/STARTSIZE)/np.sqrt((pos[i][0])**2+(pos[i][1])**2)
-        vel[i][1]=-pos[i][0]*np.sqrt(G*m*500/STARTSIZE)/np.sqrt((pos[i][0])**2+(pos[i][1])**2)
-    return Bodies(pos, vel, m)
+        vel[i][0]=pos[i][1]*np.sqrt(G*m*N/STARTSIZE)/np.sqrt((pos[i][0])**2+(pos[i][1])**2)
+        vel[i][1]=-pos[i][0]*np.sqrt(G*m*N/STARTSIZE)/np.sqrt((pos[i][0])**2+(pos[i][1])**2)
+    return Bodies(pos, vel)
+
+def randomBodiesWithBlackHole(num):
+    vel=np.zeros((num,3))
+    pos = (np.random.rand(num, 3))
+    for i in range(0,num):
+        pos[i][-1]=0
+        (pos[i][0],pos[i][1])=(pos[i][0]*STARTSIZE*np.cos(2*np.pi*pos[i][1]),pos[i][0]*STARTSIZE*np.sin(2*np.pi*pos[i][1]))
+        vel[i][0]=pos[i][1]*np.sqrt(G*m*N/STARTSIZE)/np.sqrt((pos[i][0])**2+(pos[i][1])**2)
+        vel[i][1]=-pos[i][0]*np.sqrt(G*m*N/STARTSIZE)/np.sqrt((pos[i][0])**2+(pos[i][1])**2)
+    print(pos.shape)
+    print(np.array([[0,0,0]]).shape)
+    pos2 = np.concatenate((np.array([[0,0,0]]), pos), axis=0)
+    vel2 = np.concatenate((np.array([[0,0,0]]), vel), axis=0)
+    mass2 = np.concatenate((M*np.ones((1,1)),m*np.ones((pos.shape[0], 1))), axis=0)
+    return Bodies(pos2, vel2, mass = mass2)
 
 
 def main():
     
     if RANDOM:
-        universe = randombodies(500)
+        universe = randomBodiesWithBlackHole(N)
         print('generated random bodies')
     else:
         pos = np.array([[1, 1, 1], [-1, 1, 1], [1, 2, -1]])
@@ -48,10 +65,13 @@ def main():
     
     for i in range(0, universe.num):
         planet.append(sphere(pos=vector(*(universe.pos[i][:])), radius = universe.radius[i], color=color.white))
-
     while True:
+        print("1")
         universe.do3Sim()
+        print("2")
         TIME += DT
+        print(universe.num)
+        print(oldnum)
         test = universe.num < oldnum
         
         print(TIME)

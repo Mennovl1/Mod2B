@@ -14,13 +14,16 @@ RADIUS = 5e3
 A = 5e4
 
 class Bodies:
-    def __init__(self, pos, vel, dt = DT, mass = M, radius = RADIUS):
+    def __init__(self, pos, vel, dt = DT, mass = M , radius = RADIUS):
         # Body initialization
         self.num = pos.shape[0]
         self.pos = pos
         self.vel = vel
         self.dt = dt
-        self.mass = mass * np.ones((self.num, 1))
+        if type(mass) == int or type(mass)==float :
+            self.mass = mass*np.ones((pos.shape[0], 1))
+        else:
+            self.mass = mass
         self.radius = radius*np.ones((self.num,1))#np.cbrt(3/(np.pi*4)*self.mass/RHO)
     
     def energy(self):
@@ -33,7 +36,7 @@ class Bodies:
             div = np.reshape(np.multiply(nrmdist, np.power(nrmdist,2)+A**2), (self.num,1))
             Umat = np.multiply( np.divide(dist, div), np.reshape(self.mass, (self.num,1)))
             U[i][:] =  G * np.sum(accmat, axis=0)
-        Epot = 
+        Epot = "Moet nog aangepast worden"
         return Ekin + Epot
     
     def impulse(self):
@@ -99,7 +102,9 @@ class Bodies:
         '''Perform a full 3-leapfrog update'''
         self.pos = cp.deepcopy(update3LF(self.pos, self.vel, self.num, 0, self.dt))
         #self.coll()
+        print("abc")
         accstep  = self.acc()
+        print("efg")
         self.vel = cp.deepcopy(update3LF(self.vel, accstep,  self.num, 1, self.dt))
         self.pos = cp.deepcopy(update3LF(self.pos, self.vel, self.num, 0, self.dt))
 
