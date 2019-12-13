@@ -28,15 +28,16 @@ class Bodies:
     
     def energy(self):
         Ekin = sum(0.5*self.mass*np.linalg.norm(self.vel, axis = 1)**2)
+        U = np.zeros((self.num, 1))
         for i in range(0, self.num):
             # if i not in remlist:
             dist = np.add(self.pos, - self.pos[i][:])
             nrmdist = np.linalg.norm(cp.copy(dist), axis=1)
             nrmdist[i] = 999E10
-            div = np.reshape(np.multiply(nrmdist, np.power(nrmdist,2)+A**2), (self.num,1))
-            Umat = np.multiply( np.divide(dist, div), np.reshape(self.mass, (self.num,1)))
-            U[i][:] =  G * np.sum(accmat, axis=0)
-        Epot = "Moet nog aangepast worden"
+            div = np.reshape(nrmdist, (self.num,1))
+            Umat = np.multiply( np.divide(G,div), self.mass)
+            U[i][:] = np.sum(Umat, axis=0)
+        Epot = np.sum(U, axis = 1)
         return Ekin + Epot
     
     def impulse(self):
@@ -44,6 +45,9 @@ class Bodies:
         py = self.mass[:,0]*self.vel[:,1]
         pz = self.mass[:,0]*self.vel[:,2]
         return [sum(px),sum(py),sum(pz)]
+    
+    def nullifyTotalImpulse(self):
+        return "To be added"
     
     def acc(self):
         '''Calculate acceleration'''
