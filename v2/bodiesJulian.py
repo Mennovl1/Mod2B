@@ -9,12 +9,13 @@ G = 6.67e10
 #RHO = 1/(4*np.pi/3*(5.51E3)**3)*(10E4)
 M = 5.972
 RADIUS = 5e3
+COLOR = np.array((1,0,0))
 
 A = 5e4
 
 class Bodies:
         # Body initialization
-    def __init__(self, pos, vel, dt=DT, mass = M, radius = RADIUS, color = "white"):
+    def __init__(self, pos, vel, dt=DT, mass = M, radius = RADIUS, color = COLOR):
         self.num = pos.shape[0]
         self.pos = pos
         self.vel = vel
@@ -25,9 +26,13 @@ class Bodies:
         else:
             self.mass = mass
         self.radius = radius*np.ones((self.num,1))#np.cbrt(3/(np.pi*4)*self.mass/RHO)
+        if color.shape == (3,):
+            self.color = color*np.ones((self.num,1))
+        else:
+            self.color = color
     
-    def energy(self):
-        Ekin = sum(0.5*self.mass*np.linalg.norm(self.vel, axis = 1)**2)
+    def energyClassic(self):
+        Ekin = np.sum(0.5*self.mass*np.linalg.norm(self.vel, axis = 1)**2)
         U = np.zeros((self.num, 1))
         for i in range(0, self.num):
             # if i not in remlist:
@@ -35,10 +40,23 @@ class Bodies:
             nrmdist = np.linalg.norm(cp.copy(dist), axis=1)
             nrmdist[i] = 999E10
             div = np.reshape(nrmdist, (self.num,1))
-            Umat = np.multiply( np.divide(G,div), self.mass)
+            Umat = -self.mass[i][0]*np.multiply( np.divide(G,div), self.mass)
             U[i][:] = np.sum(Umat, axis=0)
-        Epot = np.sum(U, axis = 1)
-        return Ekin + Epot
+        Epot = np.sum(U)
+        return Ekin, Epot, Ekin+Epot
+    
+    def energy(self):
+        Ekin = np.sum(0.5*self.mass*np.linalg.norm(self.vel, axis = 1)**2)
+        U = np.zeros((self.num, 1))
+        for i in range(0, self.num):
+            dist = np.add(self.pos, - self.pos[i][:])
+            nrmdist = np.linalg.norm(cp.copy(dist), axis=1)
+            nrmdist[i] = 999E10
+            div = np.reshape(nrmdist, (self.num,1))
+            Umat = np.multiply( G*self.mass[i]*(np.arctan(div/A)-np.pi/2)/A, self.mass)
+            U[i][:] = np.sum(Umat, axis=0)
+        Epot = np.sum(U)
+        return Ekin+Epot
     
     def impulse(self):
         px = self.mass[:,0]*self.vel[:,0]
@@ -57,13 +75,14 @@ class Bodies:
             dist = np.add(self.pos, - self.pos[i][:])
             nrmdist = np.linalg.norm(cp.copy(dist), axis=1)
             nrmdist[i] = 999E10
-            div = np.reshape(np.multiply(np.power(nrmdist,2), np.power(nrmdist,1)+A**1), (self.num,1))
+            div = np.reshape(np.multiply(np.power(nrmdist,1), np.power(nrmdist,2)+A**2), (self.num,1))
             accmat = np.multiply( np.divide(dist, div), np.reshape(self.mass, (self.num,1)))
             acc[i][:] =  G * np.sum(accmat, axis=0)
         return acc
         
     def coll(self):
         '''Check collision'''
+        elasticlist = []
         for i in range(0,self.num):
             dist = np.add(self.pos, - self.pos[i][:])
             nrmdist = np.linalg.norm(cp.copy(dist), axis=1)
@@ -72,10 +91,14 @@ class Bodies:
             check = np.where(nrmdist <= test)
             if check[0].size:
                 for n in check[0]:
-                    self.elastic(i,n)
-                    print("Collision",i,n)
+                    if (n,i) not in elasticlist:
+                        elasticlist+= [(i,n)]
+                    #self.elastic(i,n)
+                        print("Collision",i,n)
             else:
                 ""
+        for i,n in elasticlist:
+            self.elastic(i,n)
         return
 
     def acc_coll(self):
@@ -119,11 +142,15 @@ class Bodies:
     
     def elastic(self, i, j):
         r = self.pos[i][:]-self.pos[j][:]
-        u = float(sum((self.vel[i][:]-self.vel[j][:]))/np.linalg.norm(r)**2)
+        u = float(sum((self.vel[i][:]-self.vel[j][:])*r)/np.linalg.norm(r)**2)
         vi = self.vel[i][:] - r*u 
         vj = self.vel[j][:] + r*u
-        self.vel[i]=vi
-        self.vel[j]=vj
+        print("Old speeds:", self.vel[i][:], self.vel[j][:])
+        self.vel[i][:]=vi
+        self.vel[j][:]=vj
+        print("New speeds:", vi, vj)
+        print("I AM DOING A COLLISION\n")
+        print()
         return 
 #        r = dc(otherStar.pos-self.pos)
 #        u = float((sum((self.vel-otherStar.vel)*r) )) / (np.linalg.norm(r)**2)
