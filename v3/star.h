@@ -3,23 +3,23 @@
 
 class Star{
     public:
-        float pos[3];
-        float vel[3];
-        float acc[3];
-        float mass;
-        float radius;
+        double pos[3];
+        double vel[3];
+        double acc[3];
+        double mass;
+        double radius;
         uint id;
-        Star(float position[3], float velocity[3], uint identity);
+        Star(double position[3], double velocity[3], uint identity);
         Star();
-        void setMass(float newmass);
-        void setAcc(std::vector<float> newAcc);
+        void setMass(double newmass);
+        void setAcc(std::vector<double> newAcc);
         bool inWorld();
-        float calcEnergy();
-        float calcImpuls(int i);
-        std::vector<float> calcImpulsMoment(float reference[3]);
+        double calcEnergy();
+        double calcImpuls(int i);
+        std::vector<double> calcImpulsMoment(double reference[3]);
 };
 
-Star randomStar(uint id);
-Star randomStaruniform(uint id);
+Star* randomStar(uint id);
+Star* randomStaruniform(uint id);
 
 #endif // STAR_H

@@ -9,21 +9,22 @@
 
 class Universe{
     public:
-        Star stars[NUMSTARS];
+        Star* stars[MAXSTARS];
         Node tree;
-        volatile float acc[3];
+        volatile double acc[3];
         Universe(const bool random);
-        void do3LPFstep();
+        void do3LPFstep(double dt);
         void calcAcc();
         void initAcc(int starid);
-        std::vector<float> gravity(float a[3], float b[3], float mass);
-        float calcEnergy();
-        float calcImpuls(int i);
-        std::vector<float> calcImpulsMoment();
+        
+        double calcEnergy();
+        double calcImpuls(int i);
+        std::vector<double> calcImpulsMoment();
 };
 
-void LPFstep(float dot[3], volatile float cur[3], float dt);
-float normsq(float a[3], float b[3]);
+void LPFstep(double dot[3], volatile double cur[3], double dt);
+double normsq(double a[3], double b[3]);
+std::vector<double> gravity(double a[3], double b[3], double mass);
 
 #endif // UNIVERSE_H
 

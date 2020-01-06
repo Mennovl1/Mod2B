@@ -15,103 +15,125 @@
 #include "main.h"
 
 
-const bool RANDOM = true;
 
-std::vector<Node> NODELIST;
-
-// const char SEED[16] = "Mono's zijn suf";
 
 std::string datetime()
 {
-    time_t rawtime;
-    struct tm * timeinfo;
-    char buffer[80];
-
+    // Return a string of the current date and time
+    time_t rawtime; struct tm * timeinfo; char buffer[80];
     time (&rawtime);
     timeinfo = localtime(&rawtime);
-
     strftime(buffer,80,"%d-%m-%Y %H-%M-%S",timeinfo);
     return std::string(buffer);
 }
 
-float normsq(float a[3], float b[3]){
-    float d = sqrt((a[0] - b[0])*(a[0] - b[0]) +
+double normsq(double a[3], double b[3]){
+    // Return the distance between position a and position b
+    double d = sqrt((a[0] - b[0])*(a[0] - b[0]) +
               (a[1] - b[1])*(a[1] - b[1]) +
               (a[2] - b[2])*(a[2] - b[2]));
     return d;
 };
 
-void firstline(Star starlist[], std::fstream &csvfile, bool plotpos){
+void firstline(Star* starlist[], std::fstream &csvfile, bool plotpos){
+    // First line wrapper, storing usefull information when loading the text file from python
     csvfile << NUMSTARS << "," << DT << "," << TIME << "," << WORLDSIZE << "," << SPEEDRANGE << "," << THETA << "," << plotpos;
     for(int i = 0; i < NUMSTARS; i++){
-        csvfile << "," << starlist[i].mass;
+        csvfile << "," << starlist[i]->mass;
     };
     csvfile << "\n";
 };
 
-void appendstep(float time, Star starlist[], Universe* world, std::fstream &csvfile, bool plotpos){
+
+void appendstep(float time, Star* starlist[], Universe* world, std::fstream &csvfile, bool plotpos){
     csvfile << time;
+
     if (plotpos){
+        // Store the positions of all stars to the target text file
         for(int i = 0; i < NUMSTARS; i++){
-            csvfile << "," << starlist[i].pos[0] << "," << starlist[i].pos[1] << "," << starlist[i].pos[2];
+            csvfile << "," << starlist[i]->pos[0] << "," << starlist[i]->pos[1] << "," << starlist[i]->pos[2];
         };
     } else {
-        std::vector<float> impulsMoment = (*world).calcImpulsMoment();
-        // std::vector<float> impuls = world.calcImpuls();
-        csvfile << "," << (*world).calcEnergy() << "," << (*world).calcImpuls(0) << "," << (*world).calcImpuls(1) << "," << (*world).calcImpuls(2) << ",";
+        // Calculate energy and momentum, and create a new line for these values in the target text file
+        std::vector<double> impulsMoment = world->calcImpulsMoment();
+        csvfile << "," << world->calcEnergy() << "," << world->calcImpuls(0) << "," << world->calcImpuls(1) << "," << world->calcImpuls(2) << ",";
         csvfile << impulsMoment.at(0) << "," << impulsMoment.at(1) << "," << impulsMoment.at(2);
     };
+
     csvfile << "\n";
 };
 
-// void consoleorcustom(bool setting){
-//     G = 6.67408;
-    
-//     if(setting){
-//         std::cout << "Stars to simulate: ";
-//         std::cin >> NUMSTARS;
-//         std::cout << "\nTimestep size (recommended 1e-9): ";
-//         std::cin >> DT;
-//         std::cout << "\nSize of the world (Milkyway is 1e3): ";
-//         std::cin >> WORLDSIZE;
-//         std::cout << "\nVelocities of the stars (Milkyway orbit ~8e8): ";
-//         std::cin >> SPEEDRANGE;
-//         std::cout << "\nTree code parameter theta (recommended 0.8): ";
-//         std::cin >> THETA;
-//         std::cout << "\nDo you want to use treecode (true/false): ";
-//         std::cin >> TREE;
 
-//     } else {
-//         NUMSTARS = 100;
-//         DT = 1e-9;
-//         WORLDSIZE = 1e3;
-//         SPEEDRANGE = 8e8;
-//         THETA = 0.8;
-//         TREE = true;
-        
-//     };
-// };
-
-
-int main(){
-    // srand(201);
-    // consoleorcustom(true);
-    
-    float t = 0;
-    bool plotPos = true;
-    std::fstream csvfile;
-    std::string fname = "results/" + datetime() + ".txt";
-    csvfile.open(fname, std::ios::out);
-    Universe world = Universe(true);
+void donormalsim(Universe &world, std::fstream &csvfile, bool plotPos){
+    // Perform a simulation for the specified global time
     firstline(world.stars, csvfile, plotPos);
+    float t = 0;
 
     while(t < TIME){
         appendstep(t, world.stars, &world, csvfile, plotPos);
-        world.do3LPFstep();
+        world.do3LPFstep(DT);
         std::cout << t << "\n";
         t += DT;
     };
+
     appendstep(t, world.stars, &world, csvfile, plotPos);
+};
+
+void errorapprox(Universe &world, std::fstream &csvfile){
+    // Perform Richardson extrapolation in order to approximate the error, and write this to the target text file
+    int N = 4;
+    float dt = DT;
+    Universe worldone = world; Universe worldtwo = world; Universe worldfour = world;
+
+    // Since the tree is a system of pointers, make sure we copy the data, instead of just the pointer. Otherwise: "segmentation-faults incoming"
+    worldone.tree = copyNode(world.tree);
+    worldtwo.tree = copyNode(world.tree);
+    worldfour.tree = copyNode(world.tree);
+
+    firstline(world.stars, csvfile, false);
+
+    // Perform all required simulations
+    for(int i = 0; i < N; i++){worldone.do3LPFstep(dt); };
+    for(int i = 0; i < N / 2; i++){worldtwo.do3LPFstep(2*dt); };
+    for(int i = 0; i < N / 4; i++){worldfour.do3LPFstep(4*dt); };
+
+    // Calculate the Richardson Extrapolation error approximations, and write these to the target file
+    for(int i = 0; i < NUMSTARS; i++){
+        for(int j = 0; j < 2; j++){
+            double p    = log2(abs((worldtwo.stars[i]->pos[j] - worldfour.stars[i]->pos[j]) / (worldone.stars[i]->pos[j] - worldtwo.stars[i]->pos[j])));
+            double eps  = (worldone.stars[i]->pos[j] - worldtwo.stars[i]->pos[j]) / (pow(2, p) - 1); 
+            csvfile << p << "," << eps << ",";
+        };
+        csvfile << "\n";
+    }; 
+};
+
+std::fstream createfile(){
+    // Create a new text file with the current date and time as name
+    std::fstream csvfile;
+    std::string fname = "results/" + datetime() + ".txt";
+    csvfile.open(fname, std::ios::out);
+    return csvfile;
+};
+
+
+int main(){
+    int setting = 1;    
+    Universe world = Universe(true);
+
+    if(setting == 1){
+        // Do a normal simulation and save the positions
+        std::fstream csvfile = createfile();
+        donormalsim(world, csvfile, true);
+    } else if (setting == 2) {
+        // Do a normal simulation and save the conserved quantities
+        std::fstream csvfile = createfile();
+        donormalsim(world, csvfile, false);
+    } else if (setting == 3) {
+        // Calculate the error order using Richardson Extrapolation
+        std::fstream csvfile = createfile();
+        errorapprox(world, csvfile);
+    };
 
     return 0;
 };

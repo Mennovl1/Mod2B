@@ -9,10 +9,12 @@ import numpy as np
 import vpython as vp
 import time as time
 
-FILE = "Mod2B/v3/results/100starslarger.txt"
-RADIUS = 200
+FILE = "Mod2B/v3/results/27.txt"
+RADIUS = 20000
 
-
+if True:
+    filename = input("What file do you want to input? \n")
+    FILE = "v3/results/" + filename + ".txt"
 
 floatvec = np.vectorize(float)
 
