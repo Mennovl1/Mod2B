@@ -20,8 +20,8 @@ MASS = 5.972
 m = MASS
 M = 1000*MASS
 RADIUS = 4e4
-DT = 1e-2
-A = 0.1*STARTSIZE
+DT = 1e0
+A = 0#.1*STARTSIZE
 B = STARTSIZE
 WITH = 20e4
 
@@ -94,6 +94,17 @@ def RBDonutBlackHole(num):
     radius2 = np.concatenate((np.array([[5*RADIUS]]),radius), axis = 0)
     return Bodies(pos2, vel2, mass = mass2, radius=radius2, dt=DT, color = col2)
 
+def RBDonut(num):
+    randarr = np.random.rand(num,2)
+    pos = np.array([[(A + (B-A)*rand[0])*np.cos(2*np.pi*rand[1]),(A + (B-A)*rand[0])*np.sin(2*np.pi*rand[1]) ,np.random.normal(0,WITH) ] for rand in randarr])
+    v = lambda r: np.sqrt(G*m*num*(r-A)/((B-A)*r))
+    vel = np.array([[v(A+(B-A)*rand[0])*(-np.sin(2*np.pi*rand[1])),v(A+(B-A)*rand[0])*(np.cos(2*np.pi*rand[1])),0] for rand in randarr])
+    col = np.array([[0.75-0.25*np.sin(2*np.pi*rand[1]),0.75-0.25*np.sin(2*np.pi*rand[1]+2*np.pi/3),0.75-0.25*np.sin(2*np.pi*rand[1]-2*np.pi/3)] for rand in randarr])
+    radius = RADIUS*np.ones((num,1))
+    mass = m*np.ones((pos.shape[0], 1))
+    return Bodies(pos, vel, mass = mass, radius = radius, dt=DT, color = col)
+
+
 def SpiralGalaxy(num):
     alpha = -2
     r0 = 2e6
@@ -129,8 +140,8 @@ def SpiralGalaxy(num):
 
 def main():
     
-    #universe = RBDonutBlackHole(N)
-    universe = SpiralGalaxy(N)
+    universe = RBDonut(N)
+    #universe = 
     print('generated random bodies')
 
     planet = []
@@ -148,7 +159,7 @@ def main():
                              radius = universe.radius[i],
                              color=vector(*universe.color[i][:])))
     
-    
+    input("PRESS ENTER TO START:")
     while True:
         universe.do3Sim()
         TIME += DT
