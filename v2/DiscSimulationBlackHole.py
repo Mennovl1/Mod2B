@@ -20,7 +20,7 @@ MASS = 5.972
 m = MASS
 M = 1000*MASS
 RADIUS = 4e4
-DT = 1e-2
+DT = 1e0
 A = 0.1*STARTSIZE
 B = STARTSIZE
 WITH = 20e4
@@ -129,8 +129,8 @@ def SpiralGalaxy(num):
 
 def main():
     
-    #universe = RBDonutBlackHole(N)
-    universe = SpiralGalaxy(N)
+    universe = RBDonutBlackHole(N)
+    #universe = 
     print('generated random bodies')
 
     planet = []
@@ -148,7 +148,7 @@ def main():
                              radius = universe.radius[i],
                              color=vector(*universe.color[i][:])))
     
-    
+    input("PRESS ENTER TO START:")
     while True:
         universe.do3Sim()
         TIME += DT
