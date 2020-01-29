@@ -9,10 +9,10 @@ import numpy as np
 import vpython as vp
 import time as time
 
-FILE = "Mod2B/v3/results/27.txt"
+FILE = "C:/Users/Julian/Documents/TN&TW19-20/Modelling 2B/GitHub/v3/results/10000starsBH.txt" #False
 RADIUS = 20000
 
-if True:
+if not FILE:
     filename = input("What file do you want to input? \n")
     FILE = "v3/results/" + filename + ".txt"
 
