@@ -34,7 +34,7 @@ class Node{
 
 Node copyNode(const Node &copy);
 Node buildTree(Star* strlist[], const double WORLDSIZE);
-Node renewTree(Star* strlist[], Node* tree, const double worldsize);
+Node renewTree(Star* strlist[], Node &tree, const double worldsize);
 uint NodeCounter = 0;
 
 #endif // NODE_H

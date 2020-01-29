@@ -12,6 +12,7 @@ class Universe{
         Star* stars[MAXSTARS];
         Node tree;
         volatile double acc[3];
+        Universe();
         Universe(const bool random);
         void do3LPFstep(double dt);
         void calcAcc();

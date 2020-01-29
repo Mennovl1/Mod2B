@@ -1,6 +1,11 @@
 #include "universe.h"
+#include "star.h"
 #include "math.h"
 #include <vector>
+
+Universe::Universe(){
+    acc[0] = 0; acc[1] = 0; acc[2] = 0;
+};
 
 Universe::Universe(const bool random){
     // Constructor for our universe

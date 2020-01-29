@@ -1,5 +1,8 @@
+#include <vector>
+
 #ifndef STAR_H
 #define STAR_H
+
 
 class Star{
     public:

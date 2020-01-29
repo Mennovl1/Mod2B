@@ -19,9 +19,12 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-
+#include <fstream>
 
 #include "node.h"
+#include "universe.h"
+#include "star.h"
+
 
 
 int NUMSTARS = 10;
@@ -38,9 +41,11 @@ const bool RANDOM = true;
 
 std::string datetime();
 double normsq(double a[3], double b[3]);
-void appendstep(float time, Star* starlist[], std::fstream &csvfile);
-void firstline(Star* starlist[], std::fstream &csvfile);
-void consoleorcustom(bool setting);
+void appendstep(float time, Star* starlist[], std::fstream &csvfile, bool plotpos);
+void donormalsim(Universe &world, std::fstream &csvfile, bool plotPos);
+void errorapprox(Universe &world, std::fstream &csvfile);
+std::fstream createfile();
+void firstline(Star* starlist[], std::fstream &csvfile, bool plotpos);
 int main();
 
 #endif // MAIN_H

@@ -1,0 +1,16 @@
+import pythonInterface
+
+NUMSTARS = 10
+TREE = True
+THETA = 0.8
+DT = 1E4
+TIME = 100 * DT
+EPSILON = 0
+A = 0.05
+M = 20
+M_BLACK = 10
+WORLDSIZE = 5e6
+RANDOM = True
+
+
+# test.doInit(WORLDSIZE, NUMSTARS, TREE, THETA, EPSILON, A, M, M_BLACK)
