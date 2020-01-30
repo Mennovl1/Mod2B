@@ -1,7 +1,13 @@
 #include "universe.h"
 #include "star.h"
 #include "math.h"
+
 #include <vector>
+#include <string>
+#include <fstream>
+#include <string>
+#include <cstring>
+#include <iostream>
 
 Universe::Universe(){
     acc[0] = 0; acc[1] = 0; acc[2] = 0;
@@ -10,17 +16,10 @@ Universe::Universe(){
 Universe::Universe(const bool random){
     // Constructor for our universe
     if(random){
-        for(int i = 0; i < NUMSTARS - 1; i++){
+        stars[0] = blackhole(0);
+        for(int i = 1; i < NUMSTARS; i++){
             stars[i] = randomStaruniform(i);
         };
-        stars[NUMSTARS - 1] = blackhole(NUMSTARS - 1);
-    } else {
-        double pos1[3] = {1E2, 1E2, 0};
-        double pos2[3] = {-1E2, -1E2, 0};
-        double vel1[3] = {0, 0, 0};
-        double vel2[3] = {0, 0, 0};
-        stars[0] = new Star(pos1, vel1, 0);
-        stars[1] = new Star(pos2, vel2, 1);
     };
     if(TREE){
         tree = buildTree(stars, WORLDSIZE*5);
@@ -53,6 +52,8 @@ void Universe::initAcc(int starid){
 
 
 void Universe::do3LPFstep(double dt){
+    double minR = WORLDSIZE;
+    int val = 0;
     for(int n = 0; n < NUMSTARS; n++){
         LPFstep(stars[n]->pos, stars[n]->vel, dt / 2); // Update position
     };
@@ -65,10 +66,20 @@ void Universe::do3LPFstep(double dt){
             free(stars[n]);
             stars[n] = randomStaruniform(stars[n]->id);
         };
+        double R = normsq(stars[n]->pos, stars[0]->pos);
+        if(R < minR && n > 0){
+            minR = R;
+            val = n;
+        };
     };
     
     if(TREE){
         tree = renewTree(stars, tree, WORLDSIZE*10);
+    };
+
+    if(dynamicDT){
+        double zeros[3] = {0,0,0};
+        DT = minR * PI / normsq(stars[val]->vel, zeros) / 2;
     };
 };
 
@@ -109,6 +120,42 @@ std::vector<double> Universe::calcImpulsMoment(){
         for(int j=0; j < 3; j++){ Ltot.at(j) += abs(tmp.at(j)); };
     };
     return Ltot;
+};
+
+void Universe::getStarsFromFile(){
+    std::string line;
+    std::ifstream file(INPUT);
+    bool start = false;
+
+    if(!file){
+        std::cout << "Failed to open file";
+    };
+    int ctr = 0;
+    while(getline(file, line)){
+        if(start){
+            char chararr[line.size() + 1];
+            strcpy(chararr, line.c_str());
+            char* token = strtok(chararr, ",");
+            while(token != NULL){
+                double Pos[3];
+                double V[3];
+                double M = atof(token); token = strtok(NULL, ",");
+                Pos[0]   = atof(token); token = strtok(NULL, ",");
+                Pos[1]   = atof(token); token = strtok(NULL, ",");
+                Pos[2]   = atof(token); token = strtok(NULL, ",");
+                V[0]     = atof(token); token = strtok(NULL, ",");
+                V[1]     = atof(token); token = strtok(NULL, ",");
+                V[2]     = atof(token); token = strtok(NULL, ",");
+
+                stars[ctr] = new Star(Pos, V, ctr);
+                stars[ctr]->setMass(M);
+                ctr++;
+            };
+        } else {
+            start = true;
+            NUMSTARS = std::stoi(line);
+        };
+    };
 };
 
 void LPFstep(double cur[3], volatile double dot[3], double dt){

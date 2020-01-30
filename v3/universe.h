@@ -21,6 +21,7 @@ class Universe{
         double calcEnergy();
         double calcImpuls(int i);
         std::vector<double> calcImpulsMoment();
+        void getStarsFromFile();
 };
 
 void LPFstep(double dot[3], volatile double cur[3], double dt);

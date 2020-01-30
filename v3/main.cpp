@@ -118,8 +118,16 @@ std::fstream createfile(){
 
 
 int main(){
-    int setting = 1;    
-    Universe world = Universe(true);
+    int setting = 1;
+    Universe world;
+    if(RANDOM){
+        world = Universe(RANDOM);
+    }else{
+        world.getStarsFromFile();
+        if(TREE){
+        world.tree = buildTree(world.stars, WORLDSIZE*5);
+        };
+    };
 
     if(setting == 1){
         // Do a normal simulation and save the positions

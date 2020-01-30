@@ -1,0 +1,4 @@
+#numstars
+Mass,PosX,PosY,PosZ,Vx,Vy,Vz //BlackHole
+Mass,PosX,PosY,PosZ,Vx,Vy,Vz //Star1
+...
