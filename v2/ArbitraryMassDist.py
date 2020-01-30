@@ -20,7 +20,7 @@ MASS = 5.972
 m = MASS
 M = 1000*MASS
 RADIUS = 4e4
-DT = 1e-2
+DT = 5e-3
 A = 0.1*STARTSIZE
 B = STARTSIZE
 WITH = 20e4
@@ -95,6 +95,7 @@ def RBDonutBlackHole(num):
     return Bodies(pos2, vel2, mass = mass2, radius=radius2, dt=DT, color = col2)
 
 def SpiralGalaxy(num):
+    roffset = 1e6
     alpha = -2
     r0 = 2e6
     eps = 1e-3
@@ -115,7 +116,7 @@ def SpiralGalaxy(num):
 #    x = np.arange(0,2*np.pi,0.1)
 #    plt.plot(x, F_phi(x))
 #    plt.show()
-    rarr = Finv_r(randarr1)+0.1e6
+    rarr = Finv_r(randarr1)+roffset
     phiarr = Finv_phi(randarr2)
     pos = np.array([[rarr[i]*np.cos(phiarr[i]+alpha*np.log(rarr[i])),rarr[i]*np.sin(phiarr[i]+alpha*np.log(rarr[i])),0] for i in range(len(randarr1))])
     v = lambda r: np.sqrt(G*m*num*F_r(r)*np.pi*r/r)
@@ -125,12 +126,13 @@ def SpiralGalaxy(num):
     mass = m*np.ones((pos.shape[0], 1))
     return Bodies(pos, vel, mass = mass, radius=radius, dt=DT, color = col)
 
-
+def RanBodBHstartvel(num):
+    return
 
 def main():
     
-    #universe = RBDonutBlackHole(N)
-    universe = SpiralGalaxy(N)
+    universe = RBDonutBlackHole(N)
+    #universe = SpiralGalaxy(N)
     print('generated random bodies')
 
     planet = []

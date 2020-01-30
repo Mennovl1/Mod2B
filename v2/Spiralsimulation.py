@@ -16,7 +16,7 @@ np.random.seed(sum(ord(char) for char in SEED))
 N = 500
 G = 6.67e10
 STARTSIZE = 5e6 #in Gamma meter
-MASS = 5.972
+MASS = 5.972 
 m = MASS
 M = 1000*MASS
 RADIUS = 4e4
@@ -94,6 +94,17 @@ def RBDonutBlackHole(num):
     radius2 = np.concatenate((np.array([[5*RADIUS]]),radius), axis = 0)
     return Bodies(pos2, vel2, mass = mass2, radius=radius2, dt=DT, color = col2)
 
+def RBDonut(num):
+    randarr = np.random.rand(num,2)
+    pos = np.array([[(A + (B-A)*rand[0])*np.cos(2*np.pi*rand[1]),(A + (B-A)*rand[0])*np.sin(2*np.pi*rand[1]) ,np.random.normal(0,WITH) ] for rand in randarr])
+    v = lambda r: np.sqrt(G*M/r+G*m*num*(r-A)/((B-A)*r))
+    vel = np.array([[v(A+(B-A)*rand[0])*(-np.sin(2*np.pi*rand[1])),v(A+(B-A)*rand[0])*(np.cos(2*np.pi*rand[1])),0] for rand in randarr])
+    col = np.array([[0.75-0.25*np.sin(2*np.pi*rand[1]),0.75-0.25*np.sin(2*np.pi*rand[1]+2*np.pi/3),0.75-0.25*np.sin(2*np.pi*rand[1]-2*np.pi/3)] for rand in randarr])
+    radius = RADIUS*np.ones((num,1))
+    mass = m*np.ones((pos.shape[0], 1))
+    return Bodies(pos, vel, mass = mass, radius=radius, dt=DT, color = col)
+    
+
 def SpiralGalaxy(num):
     alpha = -2
     r0 = 2e6
@@ -164,12 +175,40 @@ def SpiralGalaxyBlackHole(num):
     
     return Bodies(pos2, vel2, mass = mass2, radius=radius2, dt=DT, color = col2)
 
+def RanBodDonutStartvel(num): 
+    randarr = np.random.rand(num,2)
+    pos = np.array([[(A + (B-A)*rand[0])*np.cos(2*np.pi*rand[1]),(A + (B-A)*rand[0])*np.sin(2*np.pi*rand[1]) ,np.random.normal(0,WITH) ] for rand in randarr])
+    
+    v = np.sqrt(r*np.linalg.norm(acc(self)))
+    
+    v = lambda r: np.sqrt(G*M/r+G*m*num*(r-A)/((B-A)*r))
+    vel = np.array([[v(A+(B-A)*rand[0])*(-np.sin(2*np.pi*rand[1])),v(A+(B-A)*rand[0])*(np.cos(2*np.pi*rand[1])),0] for rand in randarr])
+    
+    col = np.array([[0.75-0.25*np.sin(2*np.pi*rand[1]),0.75-0.25*np.sin(2*np.pi*rand[1]+2*np.pi/3),0.75-0.25*np.sin(2*np.pi*rand[1]-2*np.pi/3)] for rand in randarr])
+    radius = RADIUS*np.ones((num,1))
+    return Bodies(pos, vel, mass = mass, radius=radius, dt=DT, color = col)
 
-
+def correctVel(bodycoll):
+    pos = bodycoll.pos
+    mass = bodycoll.mass
+    radius = bodycoll.radius
+    col = bodycoll.color
+    dt = bodycoll.dt
+    vel = np.zeros((bodycoll.vel.shape))
+    acc = bodycoll.acc()
+    for i in range(vel.shape[0]): 
+        if mass[i] != M:
+            #vel[i:] = np.sqrt(np.linalg.norm(pos[i:])*np.linalg.norm(acc[i:]))*np.array([-pos[i,1], pos[i,0],0])/np.linalg.norm(pos[i,0:2])
+            vel[i:] = np.sqrt(np.linalg.norm(pos[i:])*np.linalg.norm(acc[i:]))*np.array([-acc[i,1], acc[i,0],0])/np.linalg.norm(acc[i,0:2])
+    return Bodies(pos, vel, mass=mass, radius = radius, dt=dt, color=col)
+    
+    
 def main():
     
-    #universe = RBDonutBlackHole(N)
-    universe = SpiralGalaxyBlackHole(N)
+    universe1 = RBDonutBlackHole(N)
+    #universe = SpiralGalaxyBlackHole(N)
+    #universe1 = RBDonut(N)
+    universe = correctVel(universe1)
     print('generated random bodies')
 
     planet = []
