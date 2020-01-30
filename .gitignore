@@ -2,12 +2,16 @@
 __pycache__/
 *.py[cod]
 *$py.class
-v3/results
+v3/results/
+v3/interfacetrial/
+v3/.cproject
+v3/.project
 
 # C extensions
 *.so
 *.out
 *.o
+*.exe
 
 # Distribution / packaging
 .Python
