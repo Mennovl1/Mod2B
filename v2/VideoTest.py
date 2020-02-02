@@ -13,13 +13,13 @@ from PIL import ImageGrab   # PIL
 from subprocess import call # for issuing commands
 
 def Bounds(scene):  # return canvas bounding box, excluding frames
-    bar, d = 30, 8  # title bar and frame thickness for Windows
-    return (int(scene.width+d), int(scene.height+bar), 
-            int(scene.width-d), int(scene.height-d))
+    x0, y0 = 10,109   # title bar and frame thickness for Windows
+    return (int(x0), int(y0), 
+            int(810), int(610))
     #return (int(d), int(bar), 
     #        int(-d), int(-d))
             
-scene = canvas(title='Bouncing ball')
+scene = canvas()
 ball = sphere(pos=vector(0,5,0), radius=1, color=color.yellow)    # ball
 floor = box(pos=vector(0,-5,0), length=8, height=0.2, width=4)    # floor
 
@@ -28,18 +28,18 @@ v = 0.0             # initial velocity
 ic, fnum = 0, 0     # counter, and file number
 
 while True:         # loop forever
-    rate(400)       # limit animation rate to 400 loops/sec
+    #rate(400)       # limit animation rate to 400 loops/sec
     ball.pos.y = ball.pos.y + v*dt      # update y position
     if ball.pos.y > floor.pos.y + ball.radius:  
         v = v - 9.8*dt      # above floor, update velocity
     else:                               
         v = - v             # below floor, reverse velocity
 # capture images, for 200 frames
-    if (fnum >= 200): 
+    if (fnum >= 100): 
         break
     elif (ic%20 == 0):      # grab every 20 iterations, may need adjustment
         #print(scene)
-        im = ImageGrab.grab()
+        im = ImageGrab.grab(Bounds(scene))
         num = '00'+repr(fnum)           # sequence num 000-00999, trunc. below
         im.save('img-'+num[-3:]+'.png') # save to png file, 000-999, 3 digits
         fnum += 1

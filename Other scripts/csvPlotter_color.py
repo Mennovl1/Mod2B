@@ -9,7 +9,7 @@ import numpy as np
 import vpython as vp
 import time as time
 
-FILE = "C:/Users/Gijs Mast/Documents/Universiteit jaar 3/Modelling-B/mod2b/v3/results/v1000m1M1e6Dt1.txt" #False
+FILE = "C:/Users/Julian/Documents/TN&TW19-20/Modelling 2B/GitHub/v3/results/10000starsBH.txt" #False
 RADIUS = 20000
 
 if not FILE:
@@ -30,10 +30,8 @@ def plotData(File):
     for i in range(int(N)):
         theta = np.arctan2(pos0[3*i+1], pos0[3*i])+np.pi
         color = vp.vector(0.75-0.25*np.sin(theta),0.75-0.25*np.sin(theta+2*np.pi/3),0.75-0.25*np.sin(theta-2*np.pi/3))
-        print(color)
-        print(type(color))
         bodylist += [ vp.sphere(pos = vp.vector(*pos0[3*i:3*i+3]),
-                                radius = RADIUS,col= color )]
+                                radius = RADIUS,color= color )]
     
     posline = posline0
     input()
