@@ -37,7 +37,7 @@ void Star::setAcc(std::vector<double> newAcc){
 bool Star::inWorld(){
     // Check if the current position is within the given worldsize for the Barnes Hut tree algorithm
     double zeros[3] = {0,0,0};
-    return (normsq(pos, zeros) < WORLDSIZE);
+    return (normsq(pos, zeros) < WORLDSIZE*10);
 };
 
 double Star::calcEnergy(){

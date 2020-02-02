@@ -12,6 +12,7 @@ v3/.project
 *.out
 *.o
 *.exe
+*.txt
 
 # Distribution / packaging
 .Python

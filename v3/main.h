@@ -28,17 +28,17 @@
 
 
 int NUMSTARS = 5000;
-const bool TREE = true;
+bool TREE = true;
 const bool dynamicDT = false;
 double THETA = 0.8;
-double DT = 1E4;
-double TIME = 100000 * DT;
+double DT = 5E5;
+double TIME = 1000 * DT;
 double EPSILON = 0;
 double A = 0.05;
 double M = 20;
 double M_BLACK = 1000;
 double WORLDSIZE = 5e7;
-const bool RANDOM = false;
+bool RANDOM = false;
 std::string INPUT = "/home/menno/Documents/Studie/Modelleren B/Mod2B/v3/input.txt";
 
 std::string datetime();
@@ -48,6 +48,8 @@ void donormalsim(Universe &world, std::fstream &csvfile, bool plotPos);
 void errorapprox(Universe &world, std::fstream &csvfile);
 std::fstream createfile();
 void firstline(Star* starlist[], std::fstream &csvfile, bool plotpos);
+void thetadependence(std::fstream &csvfile);
+double calcrelerror(Universe &perfworld, Universe &world);
 int main();
 
 #endif // MAIN_H

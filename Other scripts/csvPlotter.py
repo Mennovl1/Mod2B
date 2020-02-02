@@ -9,8 +9,8 @@ import numpy as np
 import vpython as vp
 import time as time
 
-FILE = "C:/Users/Julian/Documents/TN&TW19-20/Modelling 2B/GitHub/v3/results/10000starsBH.txt" #False
-RADIUS = 20000
+FILE = "Mod2B/v3/results/e17.txt" #False
+RADIUS = 20000*4
 
 if not FILE:
     filename = input("What file do you want to input? \n")
@@ -33,11 +33,12 @@ def plotData(File):
                                 radius = RADIUS) ]
     posline = posline0
     while posline:
+        # input("Press Enter")
         pos = floatvec(posline.split(",")[1:])
         for i in range(int(N)):
             body = bodylist[i]
             body.pos = vp.vector(*pos[3*i:3*i+3])
-            print("slowdown")
+            # print("slowdown")
         posline = file.readline()
     file.close()
     

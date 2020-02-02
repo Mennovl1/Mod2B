@@ -17,6 +17,7 @@ class Universe{
         void do3LPFstep(double dt);
         void calcAcc();
         void initAcc(int starid);
+        void doAcc(int starid);
         
         double calcEnergy();
         double calcImpuls(int i);

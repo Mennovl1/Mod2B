@@ -1,9 +1,11 @@
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include <ctime>
 #include <cstdlib>
 #include <string>
 #include <vector>
+// #include <limits>
 
 // Custom functions
 #include "star.h"
@@ -116,6 +118,54 @@ std::fstream createfile(){
     return csvfile;
 };
 
+void thetadependence(std::fstream &csvfile){
+    double thetalist[6] = {0.2, 0.6, 0.8, 1.0, 1.2, 1.6};
+    std::string pointslist[13] = {"10","500","1000","2000","5000","10000","15000","20000","40000","60000","80000","100000","200000"};
+    double e;
+    std::clock_t start;
+    double duration;
+    for(int j = 0; j < 13; j++){
+        std::cout << pointslist[j] << " stars \n";
+        RANDOM = false;
+        INPUT = "/home/menno/Documents/Studie/Modelleren B/Mod2B/v3/" + pointslist[j] + ".txt";
+        // std::cout << INPUT;
+        TREE = false;
+        Universe perfworld;
+        perfworld.getStarsFromFile();
+        
+        start = std::clock();
+        perfworld.do3LPFstep(DT);
+        duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
+
+        csvfile << pointslist[j] << "," << "0.0" << "," << "0.0" << "," << duration << "\n";
+
+        TREE = true;
+        for(int i = 0; i < 6; i++){
+            Universe nwwrld;
+            THETA = thetalist[i];
+            nwwrld.getStarsFromFile();
+
+            start = std::clock();
+            nwwrld.do3LPFstep(DT);
+            duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
+            // std::cout << "test";
+            e = calcrelerror(perfworld, nwwrld);
+            csvfile << pointslist[j] << "," << thetalist[i] << "," << std::setprecision(200) <<  e << "," << duration << "\n";
+        };
+    };
+};
+
+double calcrelerror(Universe &perfworld, Universe &world){
+    double error = 0;
+    double res = 0;
+    double zeros[3] = {0,0,0};
+    for(int n = 1; n < NUMSTARS; n++){
+        res = normsq(perfworld.stars[n]->pos, world.stars[n]->pos) / normsq(perfworld.stars[n]->pos, zeros);
+        error = error + res*res;
+        // std::cout << res;
+    }
+    return sqrt(error);
+};
 
 int main(){
     int setting = 1;
@@ -141,6 +191,9 @@ int main(){
         // Calculate the error order using Richardson Extrapolation
         std::fstream csvfile = createfile();
         errorapprox(world, csvfile);
+    } else if (setting == 4){
+        std::fstream csvfile = createfile();
+        thetadependence(csvfile);
     };
 
     return 0;

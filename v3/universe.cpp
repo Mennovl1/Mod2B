@@ -8,12 +8,13 @@
 #include <string>
 #include <cstring>
 #include <iostream>
+// #include <PASL>
 
 Universe::Universe(){
     acc[0] = 0; acc[1] = 0; acc[2] = 0;
 };
 
-Universe::Universe(const bool random){
+Universe::Universe(bool random){
     // Constructor for our universe
     if(random){
         stars[0] = blackhole(0);
@@ -30,21 +31,25 @@ Universe::Universe(const bool random){
 void Universe::calcAcc(){
     // calculate the acceleration for starid
     for(int starid = 0; starid < NUMSTARS; starid++){
-        initAcc(starid);
-        if (!TREE){
-            for(int n = 0; n < NUMSTARS; n++){
-                if(starid != n){ 
-                    std::vector<double> tmp = gravity(stars[starid]->pos, stars[n]->pos, stars[n]->mass); 
-                    stars[starid]->setAcc(tmp);
-                };
-            };
-        }else{
-            std::vector<double> res = tree.calcForce(*stars[starid]);
-            for(int i = 0; i < 3; i++){acc[i] = res.at(i);};
-            stars[starid]->setAcc(res);
-        };
+        doAcc(starid);
     };
 };
+
+void Universe::doAcc(int starid){
+    initAcc(starid);
+    if (!TREE){
+        for(int n = 0; n < NUMSTARS; n++){
+            if(starid != n){ 
+                std::vector<double> tmp = gravity(stars[starid]->pos, stars[n]->pos, stars[n]->mass); 
+                stars[starid]->setAcc(tmp);
+            };
+        };
+    }else{
+        std::vector<double> res = tree.calcForce(*stars[starid]);
+        for(int i = 0; i < 3; i++){acc[i] = res.at(i);};
+        stars[starid]->setAcc(res);
+    };
+}
 
 void Universe::initAcc(int starid){
     for(int i = 0; i < 3; i++){ stars[starid]->acc[i] = 0; };
@@ -54,11 +59,11 @@ void Universe::initAcc(int starid){
 void Universe::do3LPFstep(double dt){
     double minR = WORLDSIZE;
     int val = 0;
-    for(int n = 0; n < NUMSTARS; n++){
+    for(int n = 1; n < NUMSTARS; n++){
         LPFstep(stars[n]->pos, stars[n]->vel, dt / 2); // Update position
     };
     calcAcc();
-    for(int n = 0; n < NUMSTARS; n++){
+    for(int n = 1; n < NUMSTARS; n++){
         LPFstep(stars[n]->vel, stars[n]->acc, dt);     // Update velocity
         LPFstep(stars[n]->pos, stars[n]->vel, dt /2);  // Update position
 
@@ -139,7 +144,7 @@ void Universe::getStarsFromFile(){
             while(token != NULL){
                 double Pos[3];
                 double V[3];
-                double M = atof(token); token = strtok(NULL, ",");
+                double mass = atof(token); token = strtok(NULL, ",");
                 Pos[0]   = atof(token); token = strtok(NULL, ",");
                 Pos[1]   = atof(token); token = strtok(NULL, ",");
                 Pos[2]   = atof(token); token = strtok(NULL, ",");
@@ -148,14 +153,24 @@ void Universe::getStarsFromFile(){
                 V[2]     = atof(token); token = strtok(NULL, ",");
 
                 stars[ctr] = new Star(Pos, V, ctr);
-                stars[ctr]->setMass(M);
+                stars[ctr]->setMass(mass);
                 ctr++;
             };
         } else {
             start = true;
             NUMSTARS = std::stoi(line);
         };
+        // std::cout << ctr;
     };
+    M = stars[1]->mass;
+    M_BLACK = stars[0]->mass;
+    for(int n = 1; n < NUMSTARS; n++){
+        if(!stars[n]->inWorld()){
+            free(stars[n]);
+            stars[n] = randomStaruniform(stars[n]->id);
+        };
+    };
+    tree = renewTree(stars, tree, WORLDSIZE*10);
 };
 
 void LPFstep(double cur[3], volatile double dot[3], double dt){

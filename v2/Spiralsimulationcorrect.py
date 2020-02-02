@@ -13,7 +13,7 @@ SEED = "monoszijnsuf"
 TREECODE = False
 np.random.seed(sum(ord(char) for char in SEED))
 
-N = 5
+N = 500
 G = 6.67408
 STARTSIZE = 5e6 #in Gamma meter
 MASS = 5.972*3
@@ -23,7 +23,7 @@ RADIUS = 4e4
 DT = 5e-1
 A = 0.1*STARTSIZE
 B = STARTSIZE
-WITH = 20e4
+WITH = 20e4*5
 
 def sigma1(r):
     if r<A:
@@ -95,7 +95,7 @@ def RBDonutBlackHole(num):
     return Bodies(pos2, vel2, mass = mass2, radius=radius2, dt=DT, color = col2)
 
 def SpiralGalaxy(num):
-    alpha = -2
+    alpha = -2*4
     r0 = 2e6
     eps = 1e-3
     randarr1 = np.random.rand(num)
@@ -130,6 +130,7 @@ def SpiralGalaxyBlackHole(num):
     alpha = -2
     r0 = 2e6
     eps = 1e-3
+    M = 2 * num * m
     randarr1 = np.random.rand(num)
     randarr2 = np.random.rand(num)
     K = 0.25*r0
@@ -164,12 +165,49 @@ def SpiralGalaxyBlackHole(num):
     
     return Bodies(pos2, vel2, mass = mass2, radius=radius2, dt=DT, color = col2)
 
-
+def SpiralGalaxyBlackHole3D(num):
+    alpha = -2*2
+    r0 = 5e7
+    eps = 1e-3
+    M = 15 * num * m
+    randarr1 = np.random.rand(num)
+    randarr2 = np.random.rand(num)
+    K = 0.25*r0
+    #f_r = lambda r: 1/r0*np.exp(-r/r0)
+    #f_phi = lambda r: (np.sin(phi))**2
+    F_r = lambda r: 1-np.exp(-(r-K)/r0)
+    F_r = np.vectorize(F_r)
+    F_phi = lambda phi: 1/np.pi*(0.5*phi-0.25*np.sin(2*phi))
+    F_phi = np.vectorize(F_phi)
+    Finv_r = lambda p: -r0*np.log(1-p)+K
+    Finv_r = np.vectorize(Finv_r)
+    Finv_phi = lambda p: opt.newton((lambda x: F_phi(x)-p), p,tol = eps)
+    Finv_phi = np.vectorize(Finv_phi)
+#    p = np.arange(0.01,1,0.01)
+#    plt.plot(Finv_phi(p),p)
+#    x = np.arange(0,2*np.pi,0.1)
+#    plt.plot(x, F_phi(x))
+#    plt.show()
+    rarr = Finv_r(randarr1)
+    phiarr = Finv_phi(randarr2)
+    pos = np.array([[rarr[i]*np.cos(phiarr[i]+alpha*np.log(rarr[i])),rarr[i]*np.sin(phiarr[i]+alpha*np.log(rarr[i])),np.random.normal(0,WITH)] for i in range(len(randarr1))])
+    v = lambda r: np.sqrt( G*m*F_r(r)/r+ G*M/r)
+    vel = np.array([[v(rarr[i])*(-np.sin(phiarr[i]+alpha*np.log(rarr[i]))),v(rarr[i])*(np.cos(phiarr[i]+alpha*np.log(rarr[i]))),0] for i in range(len(randarr1))])
+    col = np.array([[0.75-0.25*np.sin(phiarr[i]),0.75-0.25*np.sin(phiarr[i]+2*np.pi/3),0.75-0.25*np.sin(phiarr[i]-2*np.pi/3)] for i in range(len(randarr1))])
+    radius = RADIUS*np.ones((num,1))
+    #mass = m*np.ones((pos.shape[0], 1))
+    pos2 = np.concatenate((np.array([[0,0,0]]), pos), axis=0)
+    vel2 = np.concatenate((np.array([[0,0,0]]), vel), axis=0)
+    mass2 = np.concatenate((M*np.ones((1,1)),m*np.ones((pos.shape[0], 1))), axis=0)
+    col2 = np.concatenate((np.array([[0.2,0.2,0.2]]), col), axis=0)
+    radius2 = np.concatenate((np.array([[5*RADIUS]]),radius), axis = 0)
+    
+    return Bodies(pos2, vel2, mass = mass2, radius=radius2, dt=DT, color = col2)
 
 def main():
     
     #universe = RBDonutBlackHole(N)
-    universe = SpiralGalaxyBlackHole(N)
+    universe = SpiralGalaxyBlackHole3D(N)
     print('generated random bodies')
 
     planet = []
@@ -179,10 +217,10 @@ def main():
     scene2 = canvas(title='Galaxy Simulation',
      width=700, height=700,
      center=vector(0,0,0), background=vector(0,0,0.15))
-    planet.append(sphere(pos=vector(*(universe.pos[0][:])),
-                             radius = universe.radius[0],
-                             texture="SmallBlackHole.jpg"))
-    for i in range(1, universe.num):
+    # planet.append(sphere(pos=vector(*(universe.pos[0][:])),
+                            #  radius = universe.radius[0],
+                            #  texture="SmallBlackHole.jpg"))
+    for i in range(0, universe.num):
         planet.append(sphere(pos=vector(*(universe.pos[i][:])),
                              radius = universe.radius[i],
                              color=vector(*universe.color[i][:])))
