@@ -13,6 +13,8 @@ v3/.project
 *.o
 *.exe
 *.txt
+*.mp4
+*.png
 
 # Distribution / packaging
 .Python

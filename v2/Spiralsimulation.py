@@ -205,10 +205,10 @@ def correctVel(bodycoll):
     
 def main():
     
-    universe1 = RBDonutBlackHole(N)
-    #universe = SpiralGalaxyBlackHole(N)
+    #universe1 = RBDonutBlackHole(N)
+    universe = SpiralGalaxyBlackHole(N)
     #universe1 = RBDonut(N)
-    universe = correctVel(universe1)
+    #universe = correctVel(universe1)
     print('generated random bodies')
 
     planet = []
