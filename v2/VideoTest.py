@@ -13,13 +13,13 @@ from PIL import ImageGrab   # PIL
 from subprocess import call # for issuing commands
 
 def Bounds(scene):  # return canvas bounding box, excluding frames
-    x0, y0 = 10,109   # title bar and frame thickness for Windows
+    x0, y0 = 11,111   # title bar and frame thickness for Windows
     return (int(x0), int(y0), 
-            int(810), int(610))
+            int(1.2*scene.width+x0), int(1.2*scene.height+y0))
     #return (int(d), int(bar), 
     #        int(-d), int(-d))
             
-scene = canvas()
+scene = canvas(width = 1920/1.2, height=1080/1.2)
 ball = sphere(pos=vector(0,5,0), radius=1, color=color.yellow)    # ball
 floor = box(pos=vector(0,-5,0), length=8, height=0.2, width=4)    # floor
 
@@ -46,5 +46,5 @@ while True:         # loop forever
     ic += 1
 
 # if the program cannot find "ffmpeg", check its path. can also replace it with "movie.bat"
-call("ffmpeg -r 20 -i img-%3d.png -vcodec libx264 -vf format=yuv420p,scale=412:412 -y movie.mp4")
+call("ffmpeg -r 20 -i img-%3d.png -vcodec libx264 -vf format=yuv420p,scale={}:{} -y movie.mp4".format(int(1.2*scene.width), int(1.2*scene.height)))
 print ("\n Movie made: movie.mp4")
